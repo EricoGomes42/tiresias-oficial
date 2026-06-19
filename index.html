@@ -933,6 +933,18 @@
         transform: translateY(-1px);
       }
 
+      /* Cycle Counter */
+      .cycle-counter {
+        margin-top: 15px;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        color: var(--gold-champagne);
+        opacity: 0.6;
+        text-align: center;
+        letter-spacing: 2px;
+        transition: opacity 0.5s ease;
+      }
+
       /* Rodapé Elegante */
       footer {
         flex-shrink: 0;
@@ -1961,6 +1973,7 @@
           </div>
 
           <button class="btn-glass" id="coreBtn">Begin Ritual</button>
+          <div id="cycleCounter" class="cycle-counter" style="display: none;"></div>
         </main>
 
         <footer>
@@ -2504,7 +2517,6 @@ style="height: 44.5417px; padding-bottom: 0.3467px; padding-top: 0px; padding-le
     <script
       async
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-      onerror="triggerAdblock()"
     ></script>
 
     <!-- Motor Cinemático & Lógica Otimizada (INP < 50ms) -->
