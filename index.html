@@ -3226,14 +3226,19 @@ DOM.btn.innerText = t.btnStop;
 }
 
 
-      // Trava de Sessão Rigorosa (Ativada conforme solicitação)
-      if (sessionStorage.getItem("tiresiasTrance") === "concluded") {
-        flowState = 3;
-        DOM.btn.disabled = true;
-        DOM.btn.innerText = t.btnDone;
-        DOM.btn.style.display = "inline-block";
-        DOM.inst.innerHTML = t.doneMsg;
-      }
+      // Gestão de Sessão dinâmica: Três Ciclos do Tiresias
+let cycleCount = parseInt(
+  sessionStorage.getItem("tiresiasCycles") || "0",
+  10
+);
+
+if (cycleCount >= 3) {
+  flowState = 3;
+  DOM.btn.disabled = true;
+  DOM.btn.innerText = t.btnDone;
+  DOM.btn.style.display = "inline-block";
+  DOM.inst.innerHTML = t.limitMsg || t.doneMsg;
+}
 
       // INP Master: requestAnimationFrame + Lógica State Machine
       DOM.btn.addEventListener("click", () => {
@@ -3301,10 +3306,11 @@ DOM.btn.innerText = t.btnStop;
             DOM.box.classList.add("revealed");
           });
 
-          // Set lock
-          sessionStorage.setItem("tiresiasTrance", "concluded");
-        }
-      });
+          // Regra dos 3 Ciclos: aumenta a contagem atual
+cycleCount++;
+sessionStorage.setItem("tiresiasCycles", cycleCount.toString());
+}
+});
 
       window.closeWisdom = function () {
         DOM.box.classList.remove("revealed");
@@ -3313,13 +3319,21 @@ DOM.btn.innerText = t.btnStop;
         DOM.bg.classList.remove("sintonizando");
         DOM.glow.classList.remove("sintonizando");
 
-        // Set end state due to lock
-        flowState = 3;
-        DOM.btn.disabled = true;
-        DOM.btn.classList.remove("action-ready");
-        DOM.btn.innerText = t.btnDone;
-        DOM.btn.style.display = "inline-block";
-        DOM.inst.innerHTML = t.doneMsg;
+        if (cycleCount >= 3) {
+  flowState = 3;
+  DOM.btn.disabled = true;
+  DOM.btn.classList.remove("action-ready");
+  DOM.btn.innerText = t.btnDone;
+  DOM.btn.style.display = "inline-block";
+  DOM.inst.innerHTML = t.limitMsg || t.doneMsg;
+} else {
+  flowState = 0;
+  DOM.btn.disabled = false;
+  DOM.btn.classList.remove("action-ready");
+  DOM.btn.innerText = t.btnStart;
+  DOM.btn.style.display = "inline-block";
+  DOM.inst.innerHTML = t.instruction;
+}
 
         // Re-toca o ambiente após fechar a mensagem
         setTimeout(() => AudioManager.playAmbientInteracted(), 1000);
@@ -3356,8 +3370,9 @@ DOM.btn.innerText = t.btnStop;
       };
 
       window.resetRitual = function () {
-        sessionStorage.removeItem("tiresiasTrance");
-        flowState = 0;
+  sessionStorage.removeItem("tiresiasCycles");
+  cycleCount = 0;
+  flowState = 0;
         DOM.box.classList.remove("revealed");
         DOM.body.classList.remove("state-revealed");
         DOM.body.classList.remove("sintonizando");
