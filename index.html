@@ -2023,6 +2023,7 @@
         <!-- -- UPPER BANNER (ANÚNCIO) -- -->
         <div
           class="w-full mt-0 h-[73px] border-y border-[#e2c079]/30 bg-gradient-to-r from-transparent via-[#1c223c]/60 to-transparent flex items-center justify-center backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
+  style="margin-top: 0px; margin-bottom: 0px; height: 91px;"
         >
           <span class="text-xs tracking-[0.3em] text-[#e2c079]/70 uppercase"
             >ANÚNCIO</span
@@ -2125,7 +2126,8 @@
         <!-- -- CHEST AREA: TRANSLUCENT INSTRUCTIONS BOX -- -->
         <div
           id="mob-instructionTx"
-          class="w-[297px] max-w-[90vw] h-[125px] border border-[#e2c079]/40 bg-[#0e1526]/10 backdrop-blur-md rounded-none py-5 px-6 text-center shadow-[0_8px_32px_rgba(0,0,0,0.6)] mb-[6px] text-[8.5px] sm:text-[10px] tracking-[0.15em] text-[#e2c079] drop-shadow-[0_0_8px_rgba(226,192,121,0.5)] uppercase font-medium leading-[2.2] flex items-center justify-center"
+  class="w-[297px] max-w-[90vw] h-[125px] border border-[#e2c079]/40 bg-[#0e1526]/10 backdrop-blur-md rounded-none py-5 px-6 text-center shadow-[0_8px_32px_rgba(0,0,0,0.6)] mb-[6px] text-[8.5px] sm:text-[10px] tracking-[0.15em] text-[#e2c079] drop-shadow-[0_0_8px_rgba(226,192,121,0.5)] uppercase font-medium leading-[2.2] flex items-center justify-center"
+  style="margin-right: 0px; margin-bottom: 36px;"
         >
           <span class="mobile-text w-[254px] h-[114px] mb-0"
             >RESPIRE FUNDO.<br />ENTRE EM SILÊNCIO.<br />REFLITA SOBRE SEU
@@ -2137,8 +2139,8 @@
         <button
           id="mobBtn"
           onclick="document.getElementById('coreBtn').click()"
-          class="w-[240px] h-[50px] m-0 mb-[4px] py-[1px] pr-[6px] pl-0 rounded-full border border-[#e2c079]/40 bg-transparent hover:bg-[#e2c079]/10 transition-all active:scale-[0.98] backdrop-blur-md shadow-[0_0_15px_rgba(226,192,121,0.1)] flex justify-center items-center appearance-none"
-          style="background-color: transparent"
+class="w-[240px] h-[50px] m-0 mb-[4px] py-[1px] pr-[6px] pl-0 rounded-full border border-[#e2c079]/40 bg-transparent hover:bg-[#e2c079]/10 transition-all active:scale-[0.98] backdrop-blur-md shadow-[0_0_15px_rgba(226,192,121,0.1)] flex justify-center items-center appearance-none"
+style="background-color: transparent; margin-bottom: 34px; height: 50px; padding-bottom: 1px; margin-top: -29px;"
         >
           <span
             id="mobBtnTxt"
@@ -2150,7 +2152,7 @@
         <!-- -- FOOTER -- -->
         <footer
           class="w-full bg-[rgba(5,8,17,0.95)] border-t border-[rgba(226,192,121,0.3)] h-[65.55px] px-0 flex flex-col items-center justify-center backdrop-blur-[10px] z-[50]"
-          style="height: 44.5417px; padding-bottom: 0.3467px; padding-right: 0px; padding-top: 0px; padding-left: 0px; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; margin-right: 0px;"
+style="height: 44.5417px; padding-bottom: 0.3467px; padding-top: 0px; padding-left: 0px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px; margin-top: -29px;"
         >
           <nav class="flex gap-[8px] mb-[8px]">
             <a
@@ -2187,7 +2189,7 @@
         <!-- -- LOWER BANNER (ANÚNCIO) -- -->
         <div
           class="w-full h-[70px] border-y border-[#e2c079]/30 bg-gradient-to-r from-transparent via-[#1c223c]/60 to-transparent flex items-center justify-center backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.5)] mb-0"
-          style="height: 70px;"
+  style="height: 90px; margin-bottom: 2px;"
         >
           <span class="text-xs tracking-[0.3em] text-[#e2c079]/70 uppercase"
             >ANÚNCIO</span
@@ -3174,33 +3176,55 @@
       let isAdblocked = false;
       let flowState = 0; // 0=Init, 1=Sintonizando, 2=Ready, 3=Done
 
-      function hideAdblock() {
-        sessionStorage.setItem("adblockDismissed", "true");
-        DOM.alert.classList.remove("visible");
-        if (flowState !== 3) {
-          // Return to appropriate state visual
-          if (flowState === 0) {
-            DOM.btn.disabled = false;
-            DOM.btn.innerText = t.btnStart;
-          } else if (flowState === 1) {
-            DOM.btn.disabled = true;
-            // Keep counting
-          } else if (flowState === 2) {
-            DOM.btn.disabled = false;
-            DOM.btn.innerText = t.btnReveal;
-          }
-        }
-      }
+      async function detectAdblock() {
+try {
+await fetch(
+"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js",
+{ mode: "no-cors" }
+);
+return false; // AdBlock desativado
+} catch (e) {
+return true; // AdBlock ativo
+}
+}
 
-      function triggerAdblock() {
-        if (sessionStorage.getItem("adblockDismissed") === "true") return;
-        isAdblocked = true;
-        DOM.alert.classList.add("visible");
-        if (flowState !== 3) {
-          DOM.btn.disabled = true;
-          DOM.btn.innerText = t.btnStop;
-        }
-      }
+async function hideAdblock() {
+const adblockStatus = await detectAdblock();
+
+if (adblockStatus) {
+// Continua bloqueado e reabre o aviso
+triggerAdblock();
+return;
+}
+
+// AdBlock realmente foi desativado
+isAdblocked = false;
+DOM.alert.classList.remove("visible");
+
+if (flowState !== 3) {
+if (flowState === 0) {
+DOM.btn.disabled = false;
+DOM.btn.innerText = t.btnStart;
+} else if (flowState === 1) {
+DOM.btn.disabled = true;
+// Mantém a contagem em andamento
+} else if (flowState === 2) {
+DOM.btn.disabled = false;
+DOM.btn.innerText = t.btnReveal;
+}
+}
+}
+
+function triggerAdblock() {
+isAdblocked = true;
+DOM.alert.classList.add("visible");
+
+if (flowState !== 3) {
+DOM.btn.disabled = true;
+DOM.btn.innerText = t.btnStop;
+}
+}
+
 
       // Trava de Sessão Rigorosa (Ativada conforme solicitação)
       if (sessionStorage.getItem("tiresiasTrance") === "concluded") {
@@ -3390,7 +3414,6 @@
 
         // --- CÓDIGO SECRETO PARA EXIBIR ADBLOCK (teste) ---
         if (secretCode.endsWith("teste")) {
-          sessionStorage.removeItem("adblockDismissed");
           triggerAdblock();
           secretCode = "";
         }
