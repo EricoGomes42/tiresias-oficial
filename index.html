@@ -4099,40 +4099,48 @@
              btn.innerText = t.adblockChecking;
         }
 
-        if (window.forceAdblockActive) {
-          setTimeout(() => {
-            if(btn && t && t.adblockStillBlocked) {
-                btn.innerText = t.adblockStillBlocked;
-                setTimeout(() => btn.innerText = t.adblockBtn || initialText, 2000);
-            }
-          }, 600);
-          return;
-        }
-
-        const testAd = document.createElement("script");
-        testAd.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?_t=" + Date.now();
-        testAd.async = true;
-        testAd.onerror = function() {
-          triggerAdblock();
+        const checkFail = () => {
           if(btn && t && t.adblockStillBlocked) {
               btn.innerText = t.adblockStillBlocked;
-              setTimeout(() => btn.innerText = t.adblockBtn || initialText, 2000);
+              setTimeout(() => { if (btn) btn.innerText = t.adblockBtn || initialText; }, 2000);
+          }
+        };
+
+        const unlockApp = () => {
+          isAdblocked = false;
+          window.forceAdblockActive = false;
+          if (DOM.alert) DOM.alert.classList.remove("visible");
+          if (flowState !== 3) {
+            if (flowState === 0) {
+              if (DOM.btn) {
+                DOM.btn.disabled = false;
+                DOM.btn.innerText = getBtnStartText();
+              }
+            } else if (flowState === 1) {
+              if (DOM.btn) DOM.btn.disabled = true;
+            } else if (flowState === 2) {
+              if (DOM.btn) {
+                DOM.btn.disabled = false;
+                DOM.btn.innerText = t.btnReveal;
+              }
+            }
+          }
+        };
+
+        const testAd = document.createElement("script");
+        testAd.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?tiresias_check=" + Date.now();
+        testAd.async = true;
+        testAd.onerror = function() {
+          if (navigator.onLine === false) {
+            unlockApp();
+          } else {
+            fetch("/?ping=" + Date.now(), { method: "HEAD", cache: "no-store" })
+              .then(() => checkFail())
+              .catch(() => unlockApp());
           }
         };
         testAd.onload = function() {
-          isAdblocked = false;
-          DOM.alert.classList.remove("visible");
-          if (flowState !== 3) {
-            if (flowState === 0) {
-              DOM.btn.disabled = false;
-              DOM.btn.innerText = getBtnStartText();
-            } else if (flowState === 1) {
-              DOM.btn.disabled = true;
-            } else if (flowState === 2) {
-              DOM.btn.disabled = false;
-              DOM.btn.innerText = t.btnReveal;
-            }
-          }
+          unlockApp();
         };
         document.head.appendChild(testAd);
       }

@@ -1,4 +1,5 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
@@ -28,6 +29,15 @@ async function startServer() {
   const PORT = Number(process.env.PORT) || 3000;
 
   app.use(express.json());
+
+  // Set up rate limiting: max 10 requests per minute per IP for the API endpoints
+  const apiLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 15,
+    message: { error: "Too many requests from this IP, please try again later." }
+  });
+
+  app.use("/api/", apiLimiter);
 
   const langMap: Record<string, string> = {
     en: "English",
@@ -147,10 +157,7 @@ CRITICAL RULES:
     }
 
     try {
-      let finalVoiceId = process.env.SPEECHIFY_VOICE_ID || "ron";
-      if (finalVoiceId.toLowerCase() === "declan") {
-          finalVoiceId = "ron"; // Handle user configuration alias
-      }
+      let finalVoiceId = process.env.SPEECHIFY_VOICE_ID || "declan";
 
       // Add a breath/pause at the end of the text for a softer ending
       const modifiedText = text.trim() + " ... ";
