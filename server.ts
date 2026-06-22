@@ -28,6 +28,11 @@ async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT) || 3000;
 
+  console.log("Gemini configured:", Boolean(process.env.GEMINI_API_KEY));
+  console.log("Speechify configured:", Boolean(process.env.SPEECHIFY_API_KEY));
+  console.log("Speechify voice:", process.env.SPEECHIFY_VOICE_ID || "missing");
+  console.log("Speechify model:", process.env.SPEECHIFY_MODEL || "missing");
+
   app.use(express.json());
 
   // Set up rate limiting: max 10 requests per minute per IP for the API endpoints
@@ -38,6 +43,18 @@ async function startServer() {
   });
 
   app.use("/api/", apiLimiter);
+
+  app.get("/api/health", (req, res) => {
+    res.json({
+      ok: true,
+      geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
+      speechifyConfigured: Boolean(process.env.SPEECHIFY_API_KEY),
+      speechifyVoiceId: process.env.SPEECHIFY_VOICE_ID || null,
+      speechifyModel: process.env.SPEECHIFY_MODEL || null,
+      nodeEnv: process.env.NODE_ENV || "development",
+      port: process.env.PORT ? "set" : "missing"
+    });
+  });
 
   const langMap: Record<string, string> = {
     en: "English",

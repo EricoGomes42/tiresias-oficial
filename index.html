@@ -4091,62 +4091,80 @@
         return t.btnStart3 || t.btnStart;
       }
 
-            window.forceAdblockActive = false;
+      window.forceAdblockActive = false;
+      let checkAttempts = 0;
+
       function hideAdblock() {
         const btn = document.querySelector(".adblock-btn");
-        let initialText = btn ? btn.innerText : "";
-        if (btn && t && t.adblockChecking) {
-             btn.innerText = t.adblockChecking;
-        }
+        let initialText = btn ? btn.innerText : (i18n[currentLang] || i18n["en"]).adblockBtn || "I disabled it";
+        
+        if (DOM.alert) DOM.alert.classList.remove("visible"); // Temporarily hide
 
-        const checkFail = () => {
-          if(btn && t && t.adblockStillBlocked) {
-              btn.innerText = t.adblockStillBlocked;
-              setTimeout(() => { if (btn) btn.innerText = t.adblockBtn || initialText; }, 2000);
-          }
-        };
+        // Wait 2 seconds before checking reality
+        setTimeout(() => {
+          const checkFail = () => {
+            checkAttempts++;
+            if (checkAttempts < 2) {
+                setTimeout(runTestAd, 1000); // Tolerances over false positives
+                return;
+            }
+            // Still failing
+            if (DOM.alert) DOM.alert.classList.add("visible");
+            if(btn && t && t.adblockStillBlocked) {
+                btn.innerText = t.adblockStillBlocked;
+                setTimeout(() => { if (btn) btn.innerText = t.adblockBtn || initialText; }, 2000);
+            }
+          };
 
-        const unlockApp = () => {
-          isAdblocked = false;
-          window.forceAdblockActive = false;
-          if (DOM.alert) DOM.alert.classList.remove("visible");
-          if (flowState !== 3) {
-            if (flowState === 0) {
-              if (DOM.btn) {
-                DOM.btn.disabled = false;
-                DOM.btn.innerText = getBtnStartText();
-              }
-            } else if (flowState === 1) {
-              if (DOM.btn) DOM.btn.disabled = true;
-            } else if (flowState === 2) {
-              if (DOM.btn) {
-                DOM.btn.disabled = false;
-                DOM.btn.innerText = t.btnReveal;
+          const unlockApp = () => {
+            isAdblocked = false;
+            window.forceAdblockActive = false;
+            localStorage.setItem("adBlockConfirmed", "true");
+            if (DOM.alert) DOM.alert.classList.remove("visible");
+            if (flowState !== 3) {
+              if (flowState === 0) {
+                if (DOM.btn) {
+                  DOM.btn.disabled = false;
+                  DOM.btn.innerText = getBtnStartText();
+                }
+              } else if (flowState === 1) {
+                if (DOM.btn) DOM.btn.disabled = true;
+              } else if (flowState === 2) {
+                if (DOM.btn) {
+                  DOM.btn.disabled = false;
+                  DOM.btn.innerText = t.btnReveal;
+                }
               }
             }
-          }
-        };
+          };
 
-        const testAd = document.createElement("script");
-        testAd.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?tiresias_check=" + Date.now();
-        testAd.async = true;
-        testAd.onerror = function() {
-          if (navigator.onLine === false) {
-            unlockApp();
-          } else {
-            fetch("/?ping=" + Date.now(), { method: "HEAD", cache: "no-store" })
-              .then(() => checkFail())
-              .catch(() => unlockApp());
-          }
-        };
-        testAd.onload = function() {
-          unlockApp();
-        };
-        document.head.appendChild(testAd);
+          const runTestAd = () => {
+            const testAd = document.createElement("script");
+            testAd.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?tiresias_check=" + Date.now() + "_" + checkAttempts;
+            testAd.async = true;
+            testAd.onerror = function() {
+              if (navigator.onLine === false) {
+                unlockApp();
+              } else {
+                fetch("/?ping=" + Date.now(), { method: "HEAD", cache: "no-store" })
+                  .then(() => checkFail())
+                  .catch(() => unlockApp());
+              }
+            };
+            testAd.onload = function() {
+              unlockApp();
+            };
+            document.head.appendChild(testAd);
+          };
+
+          checkAttempts = 0;
+          runTestAd();
+        }, 2000);
       }
 
       let adblockTimeout = null;
       function triggerAdblock() {
+        if(localStorage.getItem("adBlockConfirmed") === "true") return;
         if(adblockTimeout) return;
         adblockTimeout = setTimeout(() => {
           isAdblocked = true;
