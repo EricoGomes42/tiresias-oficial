@@ -2474,14 +2474,9 @@
         <button class="install-later-btn" id="installLaterBtn" onclick="dismissInstall()">Maybe later</button>
       </div>
 
-      <div class="install-prompt-box" id="installPromptIosFlow" style="display: none;">
-        <h2 class="install-title" id="iosInstTitle">Install Tiresias on your iPhone:</h2>
-        <ul class="ios-install-steps">
-          <li id="iosStep1">1. Tap Share.</li>
-          <li id="iosStep2">2. Choose Add to Home Screen.</li>
-          <li id="iosStep3">3. Confirm.</li>
-        </ul>
-        <button class="install-later-btn" id="iosInstBtn" onclick="dismissInstall()" style="margin-top: 15px;">OK</button>
+            <div class="install-prompt-box" id="installPromptFallbackFlow" style="display: none; flex-direction: column; align-items: center;">
+        <h2 class="install-title" id="fallbackInstTitle" style="text-align: center; margin-bottom: 20px; font-size: 1.1rem; line-height: 1.6; color: rgba(226,192,121, 0.9);">Use the browser menu</h2>
+        <button class="install-later-btn" id="fallbackInstBtn" onclick="dismissInstall()" style="margin-top: 15px;">OK</button>
       </div>
     </div>
 
@@ -4049,17 +4044,46 @@
 
 
             async function acceptInstall(type) {
+        const fallbackTexts = {
+          "en": { "desktop": "Use the browser menu and choose Install app.", "android": "Tap the browser menu and choose Add to Home Screen.", "ios": "Tap Share and then Add to Home Screen." },
+          "pt": { "desktop": "Use o menu do navegador e escolha Instalar app.", "android": "Toque no menu do navegador e escolha Adicionar à tela inicial.", "ios": "Toque em Compartilhar e depois em Adicionar à Tela de Início." },
+          "es": { "desktop": "Usa el menú del navegador y elige Instalar aplicación.", "android": "Toca el menú del navegador y elige Añadir a la pantalla de inicio.", "ios": "Toca Compartir y luego Añadir a la pantalla de inicio." },
+          "fr": { "desktop": "Utilisez le menu du navigateur et choisissez Installer l'application.", "android": "Appuyez sur le menu du navigateur et choisissez Ajouter à l'écran d'accueil.", "ios": "Appuyez sur Partager, puis sur Ajouter à l'écran d'accueil." },
+          "de": { "desktop": "Verwenden Sie das Browser-Menü und wählen Sie App installieren.", "android": "Tippen Sie auf das Browser-Menü und wählen Sie Zum Startbildschirm hinzufügen.", "ios": "Tippen Sie auf Teilen und dann auf Zum Startbildschirm hinzufügen." },
+          "it": { "desktop": "Usa il menu del browser e scegli Installa app.", "android": "Tocca il menu del browser e scegli Aggiungi a schermata Home.", "ios": "Tocca Condividi e poi Aggiungi a schermata Home." },
+          "ja": { "desktop": "ブラウザメニューからアプリをインストールを選択してください。", "android": "ブラウザメニューをタップし、「ホーム画面に追加」を選択してください。", "ios": "「共有」をタップし、「ホーム画面に追加」を選択してください。" },
+          "ko": { "desktop": "브라우저 메뉴를 사용하여 앱 설치를 선택하세요.", "android": "브라우저 메뉴를 탭하고 홈 화면에 추가를 선택하세요.", "ios": "공유를 탭한 다음 홈 화면에 추가를 선택하세요." },
+          "zh": { "desktop": "使用浏览器菜单并选择安装应用程序。", "android": "点击浏览器菜单并选择添加到主屏幕。", "ios": "点击分享，然后选择添加到主屏幕。" },
+          "hi": { "desktop": "ब्राउज़र मेनू का उपयोग करें और ऐप इंस्टॉल करें चुनें।", "android": "ब्राउज़र मेनू पर टैप करें और होम स्क्रीन में जोड़ें चुनें।", "ios": "शेयर पर टैप करें और फिर होम स्क्रीन में जोड़ें चुनें।" },
+          "ar": { "desktop": "استخدم قائمة المتصفح واختر تثبيت التطبيق.", "android": "اضغط على قائمة المتصفح واختر إضافة إلى الشاشة الرئيسية.", "ios": "اضغط على مشاركة ثم الإضافة إلى الشاشة الرئيسية." },
+          "ru": { "desktop": "Используйте меню браузера и выберите «Установить приложение».", "android": "Откройте меню браузера и выберите «Добавить на главный экран».", "ios": "Нажмите «Поделиться», а затем «На главный экран»." },
+          "tr": { "desktop": "Tarayıcı menüsünü kullanın ve Uygulamayı Yükle'yi seçin.", "android": "Tarayıcı menüsüne dokunun ve Ana Ekrana Ekle'yi seçin.", "ios": "Paylaş'a ve ardından Ana Ekrana Ekle'ye dokunun." },
+          "nl": { "desktop": "Gebruik het browsermenu en kies App installeren.", "android": "Tik op het browsermenu en kies Toevoegen aan startscherm.", "ios": "Tik op Delen en vervolgens op Zet op beginscherm." },
+          "pl": { "desktop": "Użyj menu przeglądarki i wybierz Zainstaluj aplikację.", "android": "Dotknij menu przeglądarki i wybierz Dodaj do ekranu głównego.", "ios": "Dotknij Udostępnij, a następnie Dodaj do ekranu głównego." },
+          "uk": { "desktop": "Скористайтесь меню браузера та виберіть «Встановити додаток».", "android": "Торкніться меню браузера та виберіть «Додати на головний екран».", "ios": "Торкніться «Поділитися», а потім «На головний екран»." },
+          "id": { "desktop": "Gunakan menu browser dan pilih Instal aplikasi.", "android": "Ketuk menu browser dan pilih Tambahkan ke Layar Utama.", "ios": "Ketuk Bagikan lalu Tambahkan ke Layar Utama." },
+          "el": { "desktop": "Χρησιμοποιήστε το μενού του προγράμματος περιήγησης και επιλέξτε Εγκατάσταση εφαρμογής.", "android": "Πατήστε το μενού του προγράμματος περιήγησης και επιλέξτε Προσθήκη στην αρχική οθόνη.", "ios": "Πατήστε Κοινή χρήση και, στη συνέχεια, Προσθήκη στην Αρχική οθόνη." },
+          "he": { "desktop": "השתמש בתפריט הדפדפן ובחר התקן אפליקציה.", "android": "הקש על תפריט הדפדפן ובחר הוסף למסך הבית.", "ios": "הקש על שתף ואז על הוסף למסך הבית." },
+          "ro": { "desktop": "Folosește meniul browserului și alege Instalează aplicația.", "android": "Atinge meniul browserului și alege Adaugă pe ecranul de pornire.", "ios": "Atinge Partajare și apoi Adaugă pe ecranul de pornire." }
+        };
+
+        const tTexts = fallbackTexts[currentLang] || fallbackTexts["en"];
+        const fallbackMsg = tTexts[type] || tTexts["desktop"];
+
         if (type === 'ios') {
           const mainBox = document.getElementById("installPromptMain");
-          const iosBox = document.getElementById("installPromptIosFlow");
+          const fallbackBox = document.getElementById("installPromptFallbackFlow");
+          const fallbackTitle = document.getElementById("fallbackInstTitle");
           if(mainBox) mainBox.style.display = "none";
-          if(iosBox) iosBox.style.display = "flex";
+          if(fallbackTitle) fallbackTitle.innerText = fallbackMsg;
+          if(fallbackBox) fallbackBox.style.display = "flex";
+          localStorage.setItem("tiresiasInstallPromptSeen", "true");
+          installPromptSeen = true;
           return;
         }
 
-        document.getElementById("installPromptOverlay").classList.remove("visible");
-
         if (deferredPrompt) {
+          document.getElementById("installPromptOverlay").classList.remove("visible");
           deferredPrompt.prompt();
           const { outcome } = await deferredPrompt.userChoice;
           if (outcome === 'accepted') {
@@ -4069,29 +4093,12 @@
           }
           deferredPrompt = null;
         } else {
-          const dt = {
-            "en": "Use the browser menu and choose Install app",
-            "pt": "Use o menu do navegador e escolha Instalar app",
-            "es": "Usa el menú del navegador y elige Instalar aplicación",
-            "fr": "Utilisez le menu du navigateur et choisissez Installer l'application",
-            "de": "Verwende das Browser-Menü und wähle App installieren",
-            "it": "Usa il menu del browser e scegli Installa app",
-            "ja": "ブラウザメニューからアプリをインストールを選択してください",
-            "ko": "브라우저 메뉴를 사용하여 앱 설치를 선택하세요",
-            "zh": "使用浏览器菜单并选择安装应用程序",
-            "hi": "ब्राउज़र मेनू का उपयोग करें और ऐप इंस्टॉल करें चुनें",
-            "ar": "استخدم قائمة المتصفح واختر تثبيت التطبيق",
-            "ru": "Используйте меню браузера и выберите «Установить приложение»",
-            "tr": "Tarayıcı menüsünü kullanın ve Uygulamayı Yükle'yi seçin",
-            "nl": "Gebruik het browsermenu en kies App installeren",
-            "pl": "Użyj menu przeglądarki i wybierz Zainstaluj aplikację",
-            "uk": "Скористайтесь меню браузера та виберіть «Встановити додаток»",
-            "id": "Gunakan menu browser dan pilih Instal aplikasi",
-            "el": "Χρησιμοποιήστε το μενού του προγράμματος περιήγησης και επιλέξτε Εγκατάσταση εφαρμογής",
-            "he": "השתמש בתפריט הדפדפן ובחר התקן אפליקציה",
-            "ro": "Folosește meniul browserului și alege Instalează aplicația"
-          };
-          alert(dt[currentLang] || dt["en"]);
+          const mainBox = document.getElementById("installPromptMain");
+          const fallbackBox = document.getElementById("installPromptFallbackFlow");
+          const fallbackTitle = document.getElementById("fallbackInstTitle");
+          if(mainBox) mainBox.style.display = "none";
+          if(fallbackTitle) fallbackTitle.innerText = fallbackMsg;
+          if(fallbackBox) fallbackBox.style.display = "flex";
         }
         
         localStorage.setItem("tiresiasInstallPromptSeen", "true");
