@@ -2,17 +2,37 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="google-site-verification" content="42wCcRRQAeK-VxRb8ErCOMUX00KF9FsnnPJJvlAMpOc" />
-
-     <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RWZDVG4Q44"></script>
+    <meta
+      name="google-site-verification"
+      content="42wCcRRQAeK-VxRb8ErCOMUX00KF9FsnnPJJvlAMpOc"
+    />
+    <!-- Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-RWZDVG4Q44"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-      gtag('config', 'G-RWZDVG4Q44');
+      gtag("config", "G-RWZDVG4Q44");
     </script>
+
+    <!-- 
+      Google AdSense & Vignette (Interstitials) Preparation
+      O script oficial do AdSense deve ser inserido aqui futuramente.
+      
+      Regra Vignette:
+      O anúncio Vignette não deve abrir durante o ritual ou navegação de modais internos.
+      Como se trata de um SPA (Single Page Application) sem links <a> de navegação interna,
+      o Vignette do AdSense não será acionado acidentalmente.
+      Para garantir que ele só apareça na intenção de saída (exit intent) quando ativado,
+      basta configurar o AdSense Auto Ads para disparar em saídas externas ou
+      adicionar `data-google-vignette="false"` em links que não devem ativá-lo.
+    -->
 
     <meta
       name="viewport"
@@ -29,11 +49,11 @@
       name="description"
       content="A quiet space for reflection. Read thoughtful messages, listen to calming words and return whenever you need a peaceful pause."
     />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="shortcut icon" href="/favicon.ico" />
 
     <!-- Multilingual SEO & AEO -->
     <meta name="robots" content="index, follow" />
@@ -2079,14 +2099,23 @@
 
     <!-- Layout Container -->
     <div class="layout-wrapper desktop-only">
-      <!-- Coluna AdSense Esquerda -->
-      <aside class="ad-sidebar left">
-        <span class="ad-placeholder vertical">[Espaço AdSense Premium]</span>
+      <!-- AdSense Sidebar Left -->
+      <aside
+        class="ad-sidebar left"
+        id="adsense-sidebar-left"
+        style="min-width: 160px"
+      >
+        <span
+          class="ad-placeholder vertical"
+          style="height: 1000px; min-height: 1000px"
+          >[Espaço AdSense Premium]</span
+        >
       </aside>
 
       <!-- Camada 2: Interface -->
       <div class="ui-layer">
-        <div class="ad-mobile top">
+        <!-- AdSense Top -->
+        <div class="ad-mobile top" id="adsense-top" style="min-height: 50px">
           <span class="ad-placeholder">Anúncio</span>
         </div>
         <!-- Toggle Audio -->
@@ -2275,14 +2304,32 @@
             © 2026 Tiresias by ecKOay | All Rights Reserved.
           </div>
         </footer>
-        <div class="ad-mobile bottom">
+        <!-- AdSense Bottom -->
+        <div
+          class="ad-mobile bottom"
+          id="adsense-bottom"
+          style="min-height: 50px"
+        >
           <span class="ad-placeholder">Anúncio</span>
         </div>
       </div>
 
-      <!-- Coluna AdSense Direita -->
-      <aside class="ad-sidebar right">
-        <span class="ad-placeholder vertical">[Espaço AdSense Premium]</span>
+      <!-- AdSense Sidebar Right -->
+      <aside
+        class="ad-sidebar right"
+        id="adsense-sidebar-right"
+        style="min-width: 160px"
+      >
+        <span
+          class="ad-placeholder vertical"
+          style="
+            height: 1000px;
+            margin-top: -90px;
+            margin-left: 0px;
+            min-height: 1000px;
+          "
+          >[Espaço AdSense Premium]</span
+        >
       </aside>
     </div>
 
@@ -3004,6 +3051,12 @@
         body: document.body,
         alert: document.getElementById("adblockAlertOverlay"),
       };
+
+      function setMainBtnDisplay(val) {
+        if (DOM.btn) DOM.btn.style.display = val;
+        const mb = document.getElementById("mobBtn");
+        if (mb) mb.style.display = val === "none" ? "none" : "";
+      }
 
       const _mobBtnTxt = document.getElementById("mobBtnTxt");
       if (DOM.btn) {
@@ -4635,7 +4688,7 @@
 
       if (ritualCountForSession >= 3) {
         flowState = 3;
-        if (DOM.btn) DOM.btn.style.display = "none";
+        setMainBtnDisplay("none");
         if (DOM.inst)
           DOM.inst.innerHTML = t.limitMsg || "O ciclo foi concluído.";
       }
@@ -4758,6 +4811,7 @@
           const payload = {
             language: currentLang,
             theme: window.tiresiasSessionTheme,
+            cycle: ritualCountForSession + 1,
           };
           console.log("--- FRONTEND: PRE-API/ORACLE ---");
           console.log("currentLang:", currentLang);
@@ -4983,16 +5037,16 @@
           flowState = 3;
           DOM.btn.disabled = true;
           DOM.btn.classList.remove("action-ready");
-          DOM.btn.style.display = "inline-block";
+          setMainBtnDisplay("inline-block");
           DOM.inst.innerHTML = t.limitMsg || t.doneMsg;
-          DOM.btn.style.display = "none";
+          setMainBtnDisplay("none");
           checkAndShowInstallPrompt();
         } else {
           flowState = 0;
           DOM.btn.disabled = false;
           DOM.btn.classList.remove("action-ready");
           DOM.btn.innerText = getBtnStartText();
-          DOM.btn.style.display = "inline-block";
+          setMainBtnDisplay("inline-block");
           DOM.inst.innerHTML = t.instruction;
         }
 
@@ -5043,7 +5097,7 @@
         DOM.btn.disabled = false;
         DOM.btn.classList.remove("action-ready");
         DOM.btn.innerText = getBtnStartText();
-        DOM.btn.style.display = "inline-block";
+        setMainBtnDisplay("inline-block");
         DOM.inst.innerHTML = t.instruction;
       };
 

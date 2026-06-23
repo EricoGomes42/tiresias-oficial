@@ -13,13 +13,13 @@ function getAIClient(): GoogleGenAI {
     if (!key) {
       console.warn("GEMINI_API_KEY is not set. API calls will fail.");
     }
-    aiClient = new GoogleGenAI({ 
+    aiClient = new GoogleGenAI({
       apiKey: key || "dummy-key-to-prevent-crash",
       httpOptions: {
         headers: {
-          'User-Agent': 'aistudio-build',
-        }
-      }
+          "User-Agent": "aistudio-build",
+        },
+      },
     });
   }
   return aiClient;
@@ -45,7 +45,9 @@ async function startServer() {
     max: 15,
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    message: { error: "Too many requests from this IP, please try again later." }
+    message: {
+      error: "Too many requests from this IP, please try again later.",
+    },
   });
 
   app.use("/api/", apiLimiter);
@@ -58,7 +60,7 @@ async function startServer() {
       speechifyVoiceId: process.env.SPEECHIFY_VOICE_ID || null,
       speechifyModel: process.env.SPEECHIFY_MODEL || null,
       nodeEnv: process.env.NODE_ENV || "development",
-      port: process.env.PORT ? "set" : "missing"
+      port: process.env.PORT ? "set" : "missing",
     });
   });
 
@@ -82,20 +84,22 @@ async function startServer() {
     id: "Indonesian",
     el: "Modern Greek",
     he: "Hebrew",
-    ro: "Romanian"
+    ro: "Romanian",
   };
 
   // API Route to generate oracle content
   app.post("/api/oracle", async (req, res) => {
     const language = req.body?.language || "en";
     const theme = req.body?.theme || "";
+    const cycle = req.body?.cycle || 1;
     const langName = langMap[language] || "English";
-    
+
     console.log("--- BACKEND: /api/oracle ---");
     console.log("lang recebido:", language);
     console.log("languageName usado:", langName);
+    console.log("cycle:", cycle);
     console.log("GEMINI_API_KEY existe?", Boolean(process.env.GEMINI_API_KEY));
-    
+
     // Fallback strings - no generic endings
     const fallbacks: Record<string, string> = {
       en: "Rest your mind for a moment. Not everything needs an answer today.\n\nTake a slow breath. Some paths clear only when we stop pushing forward.\n\nA small step is enough. Give yourself time to find peace.",
@@ -117,7 +121,7 @@ async function startServer() {
       id: "Istirahatkan pikiranmu sejenak. Tidak semuanya membutuhkan jawaban hari ini.\n\nTarik napas perlahan. Beberapa jalan hanya menjadi jelas ketika kita berhenti memaksakan diri.\n\nSatu langkah kecil saja sudah cukup. Beri dirimu waktu untuk menemukan kedamaian.",
       el: "Ξεκουράστε το μυαλό σας για μια στιγμή. Δεν χρειάζονται όλα μια απάντηση σήμερα.\n\nΠάρτε μια αργή ανάσα. Κάποια μονοπάτια ξεκαθαρίζουν μόνο όταν σταματάμε να πιέζουμε τα πράγματα.\n\nΈνα μικρό βήμα αρκεί. Δώστε στον εαυτό σας χρόνο για να βρει τη γαλήνη.",
       he: "תן למחשבות שלך לנוח לרגע. לא הכל חייב לקבל תשובה היום.\n\nקח נשימה איטית. חלק מהשבילים מתבהרים רק כשאנחנו מפסיקים לדחוף קדימה.\n\nצעד קטן זה מספיק. תן לעצמך זמן למצוא שקט.",
-      ro: "Odihnește-ți mintea pentru o clipă. Nu orice lucruri au nevoie de un răspuns astăzi.\n\nRespiră încet. Unele căi devin clare abia atunci când ne oprim din a mai forța lucrurile.\n\nUn pas mic este îndeajuns. Acordă-ți timpul necesar pentru a-ți regăsi liniștea."
+      ro: "Odihnește-ți mintea pentru o clipă. Nu orice lucruri au nevoie de un răspuns astăzi.\n\nRespiră încet. Unele căi devin clare abia atunci când ne oprim din a mai forța lucrurile.\n\nUn pas mic este îndeajuns. Acordă-ți timpul necesar pentru a-ți regăsi liniștea.",
     };
 
     try {
@@ -132,6 +136,13 @@ CRITICAL RULES:
 - PREVIOUS CONTEXT: ${theme ? `The user recently reflected on: "${theme}". Keep your message in the same philosophical and emotional field without contradicting this context.` : `This is the first message for this user today.`}
 - Generate ONLY the message text. No prefixes, no titles, no explanations.
 - Speak directly and exclusively in ${langName}.
+
+CYCLE PROGRESSION AWARENESS:
+This is message number ${cycle} out of 3 in the user's current session.
+- Even if the emotional field is the same, each message in the cycle MUST have a completely unique opening structure. Avoid repeating the same starting words or syntactic rhythm.
+- Bring a different emotional image and advance the feeling from previous thoughts.
+- Do not make the message a reformulation of the same idea. It should feel like a new layer of reflection.
+- Keep it simple, welcoming, and clear. DO NOT make it longer, more complex, or overly philosophical.
 
 STYLE AND TONE:
 - Write like a real person. Avoid sounding like an academic philosopher, university professor, coach, preacher, or therapist.
@@ -164,56 +175,60 @@ LENGTH FORMAT:
 - No emojis.`;
 
       const ai = getAIClient();
-      
+
       let responseText = "";
       let attempts = 0;
       let valid = false;
 
       while (attempts < 3 && !valid) {
-          attempts++;
-          try {
-              const modelName = attempts === 2 ? "gemini-2.5-flash" : "gemini-2.5-flash-lite";
-              const response = await ai.models.generateContent({
-                model: modelName,
-                contents: prompt,
-                config: {
-                    systemInstruction: "You are Tiresias, a wise, calm, gentle, and comforting figure.",
-                    temperature: 0.7,
-                }
-              });
-              
-              responseText = response.text || "";
-              
-              // Language Validation (very basic check for unwanted English phrases if lang is not english)
-              if (!language.startsWith("en")) {
-                  const lowerText = responseText.toLowerCase();
-                  const englishLeak = lowerText.match(/\\b(the|and|is|are|will|come back later|take care)\\b/);
-                  if (englishLeak) {
-                      continue; // retry
-                  }
-              }
-              valid = true;
-          } catch (e: any) {
-              if (attempts < 3) {
-                  // sleep 1 second and retry
-                  await new Promise(r => setTimeout(r, 1000));
-                  continue;
-              }
-              throw e;
+        attempts++;
+        try {
+          const modelName =
+            attempts === 2 ? "gemini-2.5-flash" : "gemini-2.5-flash-lite";
+          const response = await ai.models.generateContent({
+            model: modelName,
+            contents: prompt,
+            config: {
+              systemInstruction:
+                "You are Tiresias, a wise, calm, gentle, and comforting figure.",
+              temperature: 0.7,
+            },
+          });
+
+          responseText = response.text || "";
+
+          // Language Validation (very basic check for unwanted English phrases if lang is not english)
+          if (!language.startsWith("en")) {
+            const lowerText = responseText.toLowerCase();
+            const englishLeak = lowerText.match(
+              /\\b(the|and|is|are|will|come back later|take care)\\b/,
+            );
+            if (englishLeak) {
+              continue; // retry
+            }
           }
+          valid = true;
+        } catch (e: any) {
+          if (attempts < 3) {
+            // sleep 1 second and retry
+            await new Promise((r) => setTimeout(r, 1000));
+            continue;
+          }
+          throw e;
+        }
       }
-      
+
       if (!valid) {
-          throw new Error("Failed to generate language-safe message");
+        throw new Error("Failed to generate language-safe message");
       }
 
       console.log("Gemini respondeu com sucesso?");
       res.json({ message: responseText });
     } catch (error: any) {
       console.error("API call error:", error.message);
-      let fallback = fallbacks['en'];
+      let fallback = fallbacks["en"];
       if (langMap[language as string]) {
-          fallback = fallbacks[language as string] || fallbacks['en'];
+        fallback = fallbacks[language as string] || fallbacks["en"];
       }
       console.log("Fallback acionado (Oracle)");
       res.json({ message: fallback, fallback: true });
@@ -223,38 +238,43 @@ LENGTH FORMAT:
   // API Route for Speechify text-to-speech prep
   app.post("/api/speech", async (req, res) => {
     const { text, lang } = req.body;
-    
+
     console.log("speech route called");
     console.log("hasSpeechifyKey", Boolean(process.env.SPEECHIFY_API_KEY));
 
     const apiKey = process.env.SPEECHIFY_API_KEY;
     if (!apiKey) {
       console.log("se caiu em fallback: sim (Sem chave Speechify)");
-      return res.status(501).json({ error: "Speechify not configured. Falling back to browser Synthesis.", fallback: true });
+      return res
+        .status(501)
+        .json({
+          error: "Speechify not configured. Falling back to browser Synthesis.",
+          fallback: true,
+        });
     }
 
     try {
       let finalVoiceId = process.env.SPEECHIFY_VOICE_ID || "declan";
-      
-      // If the user specified the display name "declan", map it to its actual API id "ron" 
+
+      // If the user specified the display name "declan", map it to its actual API id "ron"
       // because the Speechify API throws 404 if we pass "declan" as voiceId.
       if (finalVoiceId.toLowerCase() === "declan") {
-          finalVoiceId = "ron"; 
+        finalVoiceId = "ron";
       }
-      
+
       console.log("voiceId usado:", finalVoiceId);
 
       // Add a breath/pause at the end of the text for a softer ending
       const modifiedText = text.trim() + " ... ";
 
       const client = new SpeechifyClient({
-        token: apiKey
+        token: apiKey,
       });
 
       const audioRequest: any = {
         input: modifiedText,
         voiceId: finalVoiceId,
-        audioFormat: "mp3"
+        audioFormat: "mp3",
       };
 
       if (process.env.SPEECHIFY_MODEL) {
@@ -264,13 +284,15 @@ LENGTH FORMAT:
       const audioResponse = await client.tts.audio.speech(audioRequest);
 
       if (!audioResponse || !audioResponse.audioData) {
-         throw new Error("No audio data returned");
+        throw new Error("No audio data returned");
       }
 
       // If audioData is already base64, returning it directly prevents double encoding.
       // But we will respect the user's requested instruction pattern:
       // Since we know audioData is a base64 string, wrapping it in Buffer.from(..., 'base64') and converting back works.
-      const base64Str = Buffer.from(audioResponse.audioData, "base64").toString("base64");
+      const base64Str = Buffer.from(audioResponse.audioData, "base64").toString(
+        "base64",
+      );
       res.json({ audioBase64: base64Str });
     } catch (error: any) {
       console.error("Speechify API Error:", error.message, error);
@@ -278,9 +300,15 @@ LENGTH FORMAT:
       if (error.statusCode === 401) errorMsg = "chave inválida";
       else if (error.statusCode === 402) errorMsg = "falta de créditos";
       else if (error.statusCode === 429) errorMsg = "rate limit";
-      
+
       console.log("se caiu em fallback: sim", "-", errorMsg);
-      res.status(error.statusCode || 500).json({ error: "Failed to generate speech audio.", details: error.message, fallback: true });
+      res
+        .status(error.statusCode || 500)
+        .json({
+          error: "Failed to generate speech audio.",
+          details: error.message,
+          fallback: true,
+        });
     }
   });
 
@@ -292,10 +320,10 @@ LENGTH FORMAT:
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), 'dist');
+    const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(distPath, "index.html"));
     });
   }
 
