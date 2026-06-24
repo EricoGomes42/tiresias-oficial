@@ -22,8 +22,11 @@
     </script>
 
     <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9130260971565141"
-         crossorigin="anonymous"></script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9130260971565141"
+      crossorigin="anonymous"
+    ></script>
 
     <!-- 
       Google AdSense & Vignette (Interstitials) Preparation
@@ -260,7 +263,7 @@
         }
 
         div:nth-of-type(6) > div:nth-of-type(1) > main:nth-of-type(1) {
-          margin-left: 30px !important;
+          margin-left: 40px !important;
           margin-top: 89px !important;
           padding-top: 20px !important;
           padding-bottom: 20px !important;
@@ -978,6 +981,9 @@
         letter-spacing: 2px;
         transition: all 0.3s;
         outline: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
       }
 
       .btn-wisdom-action:hover {
@@ -1394,6 +1400,9 @@
         backdrop-filter: blur(5px);
         transition: all 0.3s ease;
         font-size: 1.2rem;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
       }
 
       .audio-toggle:hover {
@@ -1531,8 +1540,9 @@
         .layout-wrapper {
           grid-template-columns: 160px 1fr 160px;
           grid-template-rows: auto 1fr auto;
-          height: 100vh;
+          height: 100svh;
           width: 100vw;
+          overflow: hidden;
         }
 
         .ui-layer {
@@ -1610,6 +1620,8 @@
           margin-right: 0px !important;
           position: relative;
           z-index: 20;
+          height: 100%;
+          min-height: 0;
         }
 
         /* Instrução Translucida estilo mobile mas no centro */
@@ -1672,19 +1684,26 @@
         /* -- FOOTER (Largura total, rodapé) -- */
         .layout-wrapper footer {
           grid-column: 1 / -1;
-          grid-row: 3;
           background: rgba(5, 8, 17, 0.95);
           border-top: 1px solid rgba(226, 192, 121, 0.3);
           backdrop-filter: blur(10px);
-          display: flex;
+          display: flex !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          height: auto !important;
+          min-height: auto !important;
+          position: absolute !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          z-index: 50 !important;
+          transform: none !important;
           flex-direction: column;
           justify-content: center;
           align-items: center;
           padding: 15px 0 max(15px, env(safe-area-inset-bottom)) 0;
-          width: 100%;
-          z-index: 50;
+          width: 100vw !important;
         }
-        .layout-wrapper footer .ad-mobile.bottom {
+        .layout-wrapper .ad-mobile.bottom {
           display: none !important;
         }
         .legal-nav {
@@ -1704,6 +1723,32 @@
           font-size: 0.5rem;
           color: rgba(255, 255, 255, 0.4);
           letter-spacing: 0.05em;
+        }
+        
+        div:nth-of-type(6) > div:nth-of-type(1) > header:nth-of-type(1) {
+          margin-right: 7px;
+          padding-bottom: 15px;
+          height: 73.3333px;
+          width: 779.167px;
+          padding-top: 15px;
+          margin-left: -10px;
+        }
+        div:nth-of-type(6) > div:nth-of-type(1) > header:nth-of-type(1) > button#audioToggle:nth-of-type(1) {
+          padding-bottom: 1px;
+          margin-right: 50px;
+        }
+        div:nth-of-type(6) > div:nth-of-type(1) > header:nth-of-type(1) > div:nth-of-type(1) > div#desktopLangTrigger:nth-of-type(1) {
+          margin-left: 50px;
+        }
+        div:nth-of-type(6) > div:nth-of-type(1) > header:nth-of-type(1) > h1#mainTitle:nth-of-type(1) {
+          margin-right: -14px;
+        }
+        div:nth-of-type(6) > div:nth-of-type(1) > footer:nth-of-type(1) {
+          height: 76.8281px;
+          margin-top: 0px;
+          margin-bottom: 0px;
+          margin-left: -5px;
+          width: 775px;
         }
       }
 
@@ -1984,7 +2029,7 @@
           bottom: 0;
           left: 200px;
         }
-        .layout-wrapper footer .ad-mobile.bottom {
+        .layout-wrapper .ad-mobile.bottom {
           display: none !important;
         }
         .legal-nav {
@@ -2693,6 +2738,11 @@
           onclick="toggleSpeech()"
           id="t-listen"
           aria-label="Ouvir Mensagem"
+          style="
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+          "
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -4787,6 +4837,56 @@
           let count = 32;
           DOM.btn.innerText = t.btnTuning.replace("{count}", count);
 
+          const payload = {
+            language: currentLang,
+            theme: window.tiresiasSessionTheme,
+            cycle: ritualCountForSession + 1,
+          };
+          console.log("--- FRONTEND: PRE-API/ORACLE ---");
+          console.log("currentLang:", currentLang);
+          console.log("Payload:", payload);
+
+          window.prefetchedMessage = null;
+          window.prefetchedAudioSrc = null;
+
+          window.oraclePromise = fetch("/api/oracle", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("--- FRONTEND: POST-API/ORACLE ---");
+              console.log("Fallback acionado (Oracle)?", !!data.fallback);
+              
+              window.prefetchedMessage = data.message;
+
+              if (data.message) {
+                // Add natural pauses for more contemplative pacing
+                const speechMsg = data.message.replace(/([.?!…]+)/g, "$1 ... ").replace(/\n/g, " ... ");
+                // Prefetch audio in background
+                fetch("/api/speech", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ text: speechMsg, lang: currentLang || "en" }),
+                })
+                .then(res => res.json())
+                .then(speechData => {
+                   if (speechData.audioBase64) {
+                      window.prefetchedAudioSrc = speechData.audioBase64.startsWith("data:")
+                        ? speechData.audioBase64
+                        : "data:audio/mpeg;base64," + speechData.audioBase64;
+                   }
+                }).catch(e => console.error("Prefetch audio failed", e));
+              }
+              return data;
+            })
+            .catch((err) => {
+              console.error("Fetch API error:", err);
+              window.prefetchedMessage = null;
+              throw err;
+            });
+
           const timer = setInterval(() => {
             count--;
             if (count > 0) {
@@ -4807,65 +4907,43 @@
 
           AudioManager.playReveal();
 
-          // Get message from Gemini API
+          // Apply prefetched message
           DOM.btn.innerText = t.btnReveal + "...";
           DOM.btn.disabled = true;
-          DOM.inst.innerHTML = `<span style="display:flex; justify-content:center; align-items:center; width:100%; height:100%; min-height:114px; text-align:center; padding:0; padding-bottom:35px; margin:0;">${t.loadingMsg}</span>`;
 
-          const payload = {
-            language: currentLang,
-            theme: window.tiresiasSessionTheme,
-            cycle: ritualCountForSession + 1,
-          };
-          console.log("--- FRONTEND: PRE-API/ORACLE ---");
-          console.log("currentLang:", currentLang);
-          console.log("Payload:", payload);
-
-          fetch("/api/oracle", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              console.log("--- FRONTEND: POST-API/ORACLE ---");
-              console.log("Response:", data);
-              console.log("Fallback acionado (Oracle)?", !!data.fallback);
-              if (data.message) {
-                DOM.txt.innerText = data.message;
-                window.tiresiasSessionTheme = data.message.substring(0, 50); // Store start of message to keep context
-              } else {
-                console.error("No message in response data", data);
-                DOM.txt.innerText =
-                  t.limitMsg ||
-                  "The message was lost in silence. Try again later.";
-              }
-              if (window.stopSpeech) window.stopSpeech();
-              requestAnimationFrame(() => {
-                DOM.body.classList.add("state-revealed");
-                DOM.box.classList.add("revealed");
-                // Wait for layout to update before resetting scroll
-                setTimeout(() => {
-                  DOM.box.scrollTop = 0;
-                  if (DOM.txt) DOM.txt.scrollTop = 0;
-                }, 50);
-              });
-            })
-            .catch((err) => {
-              console.error("Fetch API error:", err);
+          const applyMessage = (message) => {
+            if (message) {
+              DOM.txt.innerText = message;
+              window.tiresiasSessionTheme = message.substring(0, 50); // Store start of message to keep context
+            } else {
               DOM.txt.innerText =
                 t.limitMsg ||
                 "The message was lost in silence. Try again later.";
-              if (window.stopSpeech) window.stopSpeech();
-              requestAnimationFrame(() => {
-                DOM.body.classList.add("state-revealed");
-                DOM.box.classList.add("revealed");
-                setTimeout(() => {
-                  DOM.box.scrollTop = 0;
-                  if (DOM.txt) DOM.txt.scrollTop = 0;
-                }, 50);
-              });
+            }
+
+            if (window.stopSpeech) window.stopSpeech();
+            requestAnimationFrame(() => {
+              DOM.body.classList.add("state-revealed");
+              DOM.box.classList.add("revealed");
+              // Wait for layout to update before resetting scroll
+              setTimeout(() => {
+                DOM.box.scrollTop = 0;
+                if (DOM.txt) DOM.txt.scrollTop = 0;
+              }, 50);
             });
+          };
+
+          if (window.prefetchedMessage) {
+            applyMessage(window.prefetchedMessage);
+          } else if (window.oraclePromise) {
+            window.oraclePromise.then((data) => {
+              applyMessage(data.message);
+            }).catch(() => {
+              applyMessage(null);
+            });
+          } else {
+            applyMessage(null);
+          }
         }
       });
 
@@ -4937,7 +5015,11 @@
           updateListenIcon(false);
           return;
         }
-        utterance = new SpeechSynthesisUtterance(msg);
+        
+        // Add natural pauses for more contemplative pacing
+        const speechMsg = msg.replace(/([.?!…]+)/g, "$1 ... ").replace(/\n/g, " ... ");
+        
+        utterance = new SpeechSynthesisUtterance(speechMsg);
         utterance.lang = currentLang || "pt";
 
         const voice = getMaleVoice(currentLang || "pt");
@@ -4946,7 +5028,7 @@
         }
 
         utterance.pitch = 0.9;
-        utterance.rate = 0.95;
+        utterance.rate = 0.85;
 
         utterance.onend = () => {
           isSpeaking = false;
@@ -4971,16 +5053,48 @@
         const msg = DOM.txt.innerText;
         if (!msg) return;
 
+        // Synchronous unlock for mobile browsers
+        if (synth) {
+          synth.cancel();
+          let dummyUtterance = new SpeechSynthesisUtterance("");
+          dummyUtterance.volume = 0;
+          synth.speak(dummyUtterance);
+        }
+
+        // Initialize Audio object synchronously to bypass autoplay restrictions on mobile
+        currentAudioObj = new Audio();
+        currentAudioObj.src =
+          "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+        currentAudioObj.play().catch(() => {});
+        currentAudioObj.pause();
+
         isSpeaking = true;
         updateListenIcon(true);
+
+        if (window.prefetchedAudioSrc) {
+           console.log("using prefetched Speechify audio");
+           currentAudioObj.src = window.prefetchedAudioSrc;
+           currentAudioObj.play().catch(err => {
+              console.error("Audio playback error:", err);
+              fallbackToSynthesis(msg);
+           });
+           currentAudioObj.onended = () => {
+             isSpeaking = false;
+             updateListenIcon(false);
+           };
+           return;
+        }
 
         console.log("calling /api/speech");
 
         try {
+          // Add natural pauses for more contemplative pacing
+          const speechMsg = msg.replace(/([.?!…]+)/g, "$1 ... ").replace(/\n/g, " ... ");
+          
           const res = await fetch("/api/speech", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: msg, lang: currentLang || "en" }),
+            body: JSON.stringify({ text: speechMsg, lang: currentLang || "en" }),
           });
 
           console.log("speech response status:", res.status);
@@ -4992,7 +5106,7 @@
               const audioSrc = data.audioBase64.startsWith("data:")
                 ? data.audioBase64
                 : "data:audio/mpeg;base64," + data.audioBase64;
-              currentAudioObj = new Audio(audioSrc);
+              currentAudioObj.src = audioSrc;
               currentAudioObj.onended = () => {
                 isSpeaking = false;
                 currentAudioObj = null;
