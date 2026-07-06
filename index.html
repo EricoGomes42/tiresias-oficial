@@ -5306,27 +5306,37 @@
       window._mgq = window._mgq || [];
       
       if (window.matchMedia("(min-width: 768px)").matches) {
+        // Remove Mobile widgets from DOM so Adskeeper ignores them
+        document.querySelectorAll('[data-widget-id="2049143"], [data-widget-id="2049144"]').forEach(function(el) {
+          el.removeAttribute('data-type');
+          el.removeAttribute('data-widget-id');
+        });
+
         // 1. Widget Popup Desktop/Tablet (2049126)
         var popupDivDesktop = document.createElement("div");
         popupDivDesktop.setAttribute("data-type", "_mgwidget");
         popupDivDesktop.setAttribute("data-widget-id", "2049126");
         document.body.appendChild(popupDivDesktop);
+        
+        // Initialize 2 sidebars + 1 popup
+        window._mgq.push(["_mgc.load"]);
+        window._mgq.push(["_mgc.load"]);
         window._mgq.push(["_mgc.load"]);
       } else {
+        // Remove Desktop widgets from DOM so Adskeeper ignores them
+        document.querySelectorAll('[data-widget-id="2049124"], [data-widget-id="2049125"]').forEach(function(el) {
+          el.removeAttribute('data-type');
+          el.removeAttribute('data-widget-id');
+        });
+
         // 2. Widget Popup Mobile (2049146)
         var popupDivMobile = document.createElement("div");
         popupDivMobile.setAttribute("data-type", "_mgwidget");
         popupDivMobile.setAttribute("data-widget-id", "2049146");
         document.body.appendChild(popupDivMobile);
-        window._mgq.push(["_mgc.load"]);
         
-        // Load upper and lower banners (2049143, 2049144) that are statically in DOM for Mobile
+        // Initialize 2 banners + 1 popup
         window._mgq.push(["_mgc.load"]);
-        window._mgq.push(["_mgc.load"]);
-      }
-      
-      // Load sidebars (2049124, 2049125) that are statically in DOM for Desktop/Tablet
-      if (window.matchMedia("(min-width: 768px)").matches) {
         window._mgq.push(["_mgc.load"]);
         window._mgq.push(["_mgc.load"]);
       }
