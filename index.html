@@ -2413,7 +2413,7 @@
             height: 86.9896px;
           "
         >
-          <div data-type="_mgwidget" data-widget-id="2049127"></div>
+          <div data-type="_mgwidget" data-widget-id="2049143"></div>
         </div>
 
         <!-- -- HEADER -- -->
@@ -2683,7 +2683,7 @@
           class="w-full h-[70px] border-y border-[#e2c079]/30 bg-gradient-to-r from-transparent via-[#1c223c]/60 to-transparent flex items-center justify-center backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.5)] mb-0"
           style="height: 90px; margin-bottom: -1px"
         >
-          <div data-type="_mgwidget" data-widget-id="2049127"></div>
+          <div data-type="_mgwidget" data-widget-id="2049144"></div>
         </div>
       </div>
     </div>
@@ -5304,24 +5304,32 @@
     <script src="https://jsc.adskeeper.com/site/1102886.js" async></script>
     <script>
       window._mgq = window._mgq || [];
-
-      // 1. Widget Popup (2049126) para TODOS os dispositivos
-      var popupDiv = document.createElement("div");
-      popupDiv.setAttribute("data-type", "_mgwidget");
-      popupDiv.setAttribute("data-widget-id", "2049126");
-      document.body.appendChild(popupDiv);
-      window._mgq.push(["_mgc.load"]);
-
-      // 2. Widget Mobile (2049127) APENAS para celulares
-      if (window.matchMedia("(max-width: 767px)").matches) {
-        // As divs 2049127 já estão estáticas no UPPER e LOWER banners
+      
+      if (window.matchMedia("(min-width: 768px)").matches) {
+        // 1. Widget Popup Desktop/Tablet (2049126)
+        var popupDivDesktop = document.createElement("div");
+        popupDivDesktop.setAttribute("data-type", "_mgwidget");
+        popupDivDesktop.setAttribute("data-widget-id", "2049126");
+        document.body.appendChild(popupDivDesktop);
+        window._mgq.push(["_mgc.load"]);
+      } else {
+        // 2. Widget Popup Mobile (2049146)
+        var popupDivMobile = document.createElement("div");
+        popupDivMobile.setAttribute("data-type", "_mgwidget");
+        popupDivMobile.setAttribute("data-widget-id", "2049146");
+        document.body.appendChild(popupDivMobile);
+        window._mgq.push(["_mgc.load"]);
+        
+        // Load upper and lower banners (2049143, 2049144) that are statically in DOM for Mobile
         window._mgq.push(["_mgc.load"]);
         window._mgq.push(["_mgc.load"]);
       }
       
-      // Load sidebars (2049124, 2049125) that are statically in DOM
-      window._mgq.push(["_mgc.load"]);
-      window._mgq.push(["_mgc.load"]);
+      // Load sidebars (2049124, 2049125) that are statically in DOM for Desktop/Tablet
+      if (window.matchMedia("(min-width: 768px)").matches) {
+        window._mgq.push(["_mgc.load"]);
+        window._mgq.push(["_mgc.load"]);
+      }
     </script>
   </body>
 </html>
