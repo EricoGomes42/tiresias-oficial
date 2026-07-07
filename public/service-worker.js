@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tiresias-cache-v3';
+const CACHE_NAME = 'tiresias-cache-v4';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -36,9 +36,44 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Ignorar scripts e requisições de terceiros (Adskeeper, Google Analytics, etc)
+  if (!event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
+  const isHtmlRequest = event.request.mode === 'navigate' || 
+                        (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html')) ||
+                        event.request.url.endsWith('/index.html') ||
+                        event.request.url === self.location.origin + '/';
+
+  // Network First strategy para arquivos HTML/Navegação
+  if (isHtmlRequest) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // Cache First strategy para assets estáticos locais
   event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request);
-    })
+    caches.match(event.request)
+      .then(response => {
+        return response || fetch(event.request).then(fetchRes => {
+          return caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, fetchRes.clone());
+            return fetchRes;
+          });
+        });
+      })
   );
 });
