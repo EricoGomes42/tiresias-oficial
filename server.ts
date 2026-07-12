@@ -265,7 +265,7 @@ LENGTH FORMAT:
       console.log("voiceId usado:", finalVoiceId);
 
       // Add a breath/pause at the end of the text for a softer ending
-      const modifiedText = text.trim() + " ... ";
+      const modifiedText = text.trim();
 
       const client = new SpeechifyClient({
         token: apiKey,
