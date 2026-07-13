@@ -87,6 +87,300 @@ async function startServer() {
     ro: "Romanian",
   };
 
+  interface ThemeDefinition {
+    id: string;
+    namePt: string;
+    nameEn: string;
+    keywords: string[];
+    subthemes: Array<{
+      titlePt: string;
+      titleEn: string;
+      descPt: string;
+      descEn: string;
+    }>;
+  }
+
+  const THEME_CATEGORIES: ThemeDefinition[] = [
+    {
+      id: "inner_life",
+      namePt: "Vida Interior (cobrança, ansiedade, vazio, descanso)",
+      nameEn: "Inner Life (self-expectation, anxiety, feeling of void, rest, guilt for pausing)",
+      keywords: [
+        "ansiedade", "futuro", "mente", "cobrança", "perfeito", "autoestima", "culpa", "pausa", "descansar", "aprovador", "agradar", "vazio",
+        "anxiety", "tomorrow", "self-criticism", "perfection", "esteem", "guilt", "pause", "rest", "approval", "please others", "void"
+      ],
+      subthemes: [
+        {
+          titlePt: "Autocrítica silenciosa",
+          titleEn: "Silent Self-Criticism",
+          descPt: "focar na cobrança interna exagerada, na necessidade de ser perfeito e no cansaço que isso gera.",
+          descEn: "focus on excessive internal standards, the constant need to be perfect, and the exhaustion that this demands."
+        },
+        {
+          titlePt: "Ansiedade do amanhã",
+          titleEn: "Anxiety of Tomorrow",
+          descPt: "o medo do futuro, a mente que corre mais rápido do que os passos, tentando controlar o incontrolável.",
+          descEn: "the fear of the future, a mind running faster than one's steps, trying to control what cannot be controlled."
+        },
+        {
+          titlePt: "O vazio acolhedor",
+          titleEn: "The Welcoming Void",
+          descPt: "aceitar momentos em que nada parece fazer sentido, em vez de se desesperar com a falta de rumo.",
+          descEn: "accepting moments when nothing seems to make sense, rather than despairing over a temporary lack of direction."
+        },
+        {
+          titlePt: "Culpa por pausar",
+          titleEn: "Guilt for Pausing",
+          descPt: "a imensa dificuldade de descansar sem sentir que está falhando ou ficando para trás.",
+          descEn: "the immense difficulty of resting without feeling like you are failing or falling behind."
+        },
+        {
+          titlePt: "Necessidade de aprovação",
+          titleEn: "Need for Approval",
+          descPt: "o esforço invisível para agradar a todos e o esquecimento de suas próprias necessidades e limites.",
+          descEn: "the invisible effort to please everyone, leading to neglecting your own needs and boundaries."
+        }
+      ]
+    },
+    {
+      id: "relations",
+      namePt: "Relações Humanas (limites, confiar, amar de longe, conexões)",
+      nameEn: "Human Relations (boundaries, trust, loving from afar, connection, ego)",
+      keywords: [
+        "limite", "não", "amar de longe", "distância", "confiar", "decepção", "solidão", "orgulho", "ego", "desculpas", "reconciliação", "amizade", "amor", "família", "relacionamento",
+        "boundary", "saying no", "distance", "trust", "disappointment", "loneliness", "pride", "apologize", "reconciliation", "friendship", "love", "family", "relationship"
+      ],
+      subthemes: [
+        {
+          titlePt: "Limites necessários",
+          titleEn: "Necessary Boundaries",
+          descPt: "aprender a dizer não para os outros como um ato de preservação, respeito a si mesmo e dignidade.",
+          descEn: "learning to say no to others as an act of self-preservation, self-respect, and dignity."
+        },
+        {
+          titlePt: "Distância afetiva",
+          titleEn: "Loving from Afar",
+          descPt: "aceitar que algumas pessoas precisam ser amadas de longe para que a sua própria paz seja mantida.",
+          descEn: "accepting that some people must be loved from afar so that your own peace of mind can be preserved."
+        },
+        {
+          titlePt: "Medo de confiar",
+          titleEn: "Fear of Trusting Again",
+          descPt: "a cicatriz de uma decepção passada que torna difícil se abrir e confiar em novas relações.",
+          descEn: "the scar of a past betrayal or disappointment that makes it hard to open up and trust in new relationships."
+        },
+        {
+          titlePt: "Silêncio acompanhado",
+          titleEn: "Silence in Company",
+          descPt: "a solidão profunda que se sente mesmo ao lado de alguém, quando a conexão verdadeira se perdeu.",
+          descEn: "the deep loneliness felt even when next to someone, when the true emotional connection has faded."
+        },
+        {
+          titlePt: "Ego e reconciliação",
+          titleEn: "Ego and Reconciliation",
+          descPt: "a barreira do orgulho que impede um gesto de carinho, um abraço ou uma conversa sincera de desculpas.",
+          descEn: "the barrier of pride that prevents a gesture of affection, a hug, or a sincere conversation of apology."
+        }
+      ]
+    },
+    {
+      id: "practical_life",
+      namePt: "Vida Prática e Escolhas (atraso, rotina, decisões, esforço sem brilho)",
+      nameEn: "Practical Life and Choices (feeling behind, routine, decisions, unrecognised effort)",
+      keywords: [
+        "atrasado", "atraso", "comparação", "tempo", "procrastinar", "paralisia", "rotina", "mudança", "trabalho", "carreira", "esforço", "notar", "decisão", "encruzilhada", "rumo",
+        "behind", "comparison", "delay", "time", "procrastinate", "paralysis", "routine", "change", "work", "career", "effort", "notice", "decision", "crossroads", "direction"
+      ],
+      subthemes: [
+        {
+          titlePt: "Sensação de atraso",
+          titleEn: "Feeling Behind in Life",
+          descPt: "a comparação inevitável com o progresso alheio, sentindo-se atrasado em relação à idade ou expectativas.",
+          descEn: "the inevitable comparison with other people's progress, feeling left behind regarding age or social expectations."
+        },
+        {
+          titlePt: "Procrastinação e paralisia",
+          titleEn: "Procrastination and Paralysis",
+          descPt: "a paralisia mental diante de escolhas gigantescas e a necessidade de focar em pequenas ações de cada vez.",
+          descEn: "mental paralysis when facing massive choices, and the need to focus on small micro-actions instead of the whole mountain."
+        },
+        {
+          titlePt: "Mudança inevitável",
+          titleEn: "Inevitable Change",
+          descPt: "a transição de casa, de carreira ou de rotina que causa medo, mas limpa o espaço para o novo.",
+          descEn: "transitions of home, career, or routine that cause fear but clear out space for new life to emerge."
+        },
+        {
+          titlePt: "Esforço invisível",
+          titleEn: "Invisible Effort",
+          descPt: "o trabalho silencioso e diário que ninguém parece notar ou aplaudir, mas que molda o seu caráter.",
+          descEn: "the quiet, daily hard work that no one seems to notice or applaud, yet silently builds who you are."
+        },
+        {
+          titlePt: "Decisões em suspenso",
+          titleEn: "Decisions Suspended",
+          descPt: "a angústia de estar diante de caminhos opostos sem ter certeza de qual escolha trará menos arrependimento.",
+          descEn: "the anxiety of standing at a crossroads without knowing which choice will lead to fewer regrets."
+        }
+      ]
+    },
+    {
+      id: "growth",
+      namePt: "Crescimento e Sabedoria (saber partir, recomeçar, hábitos, aceitação ativa)",
+      nameEn: "Growth and Wisdom (knowing when to leave, starting over, daily habits, active acceptance)",
+      keywords: [
+        "partir", "retirar", "teimosia", "recomeço", "início", "hábito", "destino", "aceitar", "realidade", "inacabado", "processo",
+        "leave", "withdraw", "stubborn", "restarting", "beginning", "habit", "destiny", "accept", "reality", "unfinished", "process"
+      ],
+      subthemes: [
+        {
+          titlePt: "A hora de partir",
+          titleEn: "Knowing When to Leave",
+          descPt: "discernir quando a persistência se transformou em teimosia e apego, e que recuar é o verdadeiro ato de coragem.",
+          descEn: "discerning when persistence has turned into stubbornness or attachment, and realizing that letting go is the true act of courage."
+        },
+        {
+          titlePt: "A beleza de recomeçar",
+          titleEn: "The Beauty of Starting Over",
+          descPt: "compreender que voltar à estaca zero não é perder tempo, mas recomeçar com uma bagagem muito mais madura.",
+          descEn: "understanding that going back to square one is not a waste of time, but starting over with a much more mature perspective."
+        },
+        {
+          titlePt: "Consistência silenciosa",
+          titleEn: "Silent Consistency",
+          descPt: "o imenso valor dos pequenos hábitos diários que ninguém vê, mas que ao longo dos anos redefinem quem somos.",
+          descEn: "the immense value of small daily habits that no one else sees, but which over the years redefine who you are."
+        },
+        {
+          titlePt: "Aceitação ativa",
+          titleEn: "Active Acceptance",
+          descPt: "olhar de frente para a realidade como ela se apresenta hoje, sem ilusões, para ganhar o poder de transformá-la.",
+          descEn: "looking straight at reality as it is today, without illusions, in order to gain the power to actually transform it."
+        },
+        {
+          titlePt: "A beleza do inacabado",
+          titleEn: "The Beauty of the Unfinished",
+          descPt: "parar de exigir estar pronto e aceitar que somos obras em andamento, imperfeitas e ricas de possibilidades.",
+          descEn: "stopping the demand to be fully complete, accepting that we are works in progress, imperfect yet full of possibilities."
+        }
+      ]
+    },
+    {
+      id: "pain_loss",
+      namePt: "Dores e Saudade (ausência, perdas, arrependimento, não pertencer)",
+      nameEn: "Pain and Loss (absence, regrets, not belonging, invisible wounds)",
+      keywords: [
+        "saudade", "ausência", "luto", "perda", "arrependimento", "passado", "desmoronar", "estrangeiro", "ferida", "injustiça", "fracasso", "rejeição",
+        "longing", "absence", "grief", "loss", "regret", "past", "crumble", "stranger", "wound", "injustice", "failure", "rejection"
+      ],
+      subthemes: [
+        {
+          titlePt: "A ausência física",
+          titleEn: "Physical Absence",
+          descPt: "o espaço vazio deixado por quem partiu, aceitando a dor da saudade sem deixar que ela paralise o presente.",
+          descEn: "the empty space left by someone who is gone, accepting the pain of longing without letting it freeze your present."
+        },
+        {
+          titlePt: "O arrependimento tardio",
+          titleEn: "Late Regrets",
+          descPt: "reconciliar-se com as decisões do passado, sabendo que você fez o melhor que podia com a maturidade que tinha na época.",
+          descEn: "reconciling with past decisions, knowing you did the best you could with the maturity you had at the time."
+        },
+        {
+          titlePt: "Expectativas desfeitas",
+          titleEn: "Shattered Expectations",
+          descPt: "a dor sutil de ver um plano de vida perfeito desmoronar devido a circunstâncias que fugiram completamente ao seu controle.",
+          descEn: "the subtle pain of seeing a perfect life plan fall apart due to circumstances completely beyond your control."
+        },
+        {
+          titlePt: "Não pertencer",
+          titleEn: "Not Belonging",
+          descPt: "sentir-se deslocado ou incompreendido pelas pessoas ao redor, redescobrindo que seu valor não depende de aprovação externa.",
+          descEn: "feeling out of place or misunderstood by those around you, rediscovering that your worth does not depend on fitting in."
+        },
+        {
+          titlePt: "A ferida silenciosa",
+          titleEn: "The Silent Wound",
+          descPt: "aquela dor íntima que não se comenta com ninguém, mas que exige carinho, paciência e respeito com seu próprio tempo de cura.",
+          descEn: "that intimate pain you do not mention to anyone, which demands self-compassion, patience, and respect for your own healing process."
+        }
+      ]
+    },
+    {
+      id: "bright",
+      namePt: "Aspectos Luminosos e Leveza (pequenas vitórias, orgulho saudável, entusiasmo)",
+      nameEn: "Bright Aspects and Lightness (small victories, healthy pride, subtle enthusiasm, rest)",
+      keywords: [
+        "vitória", "pequenas", "leve", "sorriso", "café", "força", "sobreviver", "curiosidade", "entusiasmo", "bem", "paz", "descanso", "generoso", "gratidão",
+        "victory", "small", "light", "smile", "coffee", "strength", "survive", "curiosity", "enthusiasm", "good", "peace", "rest", "generous", "gratitude"
+      ],
+      subthemes: [
+        {
+          titlePt: "Pequenas vitórias do dia",
+          titleEn: "Small Daily Victories",
+          descPt: "celebrar pequenos momentos simples: um café quente, a respiração calma, um instante em que o peito esteve leve.",
+          descEn: "celebrating simple, small moments: a warm coffee, quiet breathing, a single second when the heart felt light."
+        },
+        {
+          titlePt: "Orgulho silencioso de si",
+          titleEn: "Silent Self-Pride",
+          descPt: "reconhecer a imensa força que você teve para atravessar tempestades que ninguém mais ficou sabendo.",
+          descEn: "recognizing the quiet strength you possessed to survive storms that absolutely no one else knew about."
+        },
+        {
+          titlePt: "Entusiasmo discreto",
+          titleEn: "Subtle Enthusiasm",
+          descPt: "o reacender sutil da curiosidade, uma nova vontade de ler, criar ou experimentar algo novo, sem pressa.",
+          descEn: "the gentle reigniting of curiosity, a soft desire to read, build, or try something new, without any rushing."
+        },
+        {
+          titlePt: "Generosidade calma",
+          titleEn: "Calm Generosity",
+          descPt: "o prazer simples de fazer um pequeno bem a alguém ou de receber afeto genuíno, restaurando a fé nas relações.",
+          descEn: "the simple pleasure of doing a small act of kindness or receiving genuine affection, restoring faith in human connection."
+        },
+        {
+          titlePt: "Descanso absoluto",
+          titleEn: "Absolute Rest",
+          descPt: "apreciar a beleza de um momento em que nada precisa ser corrigido, planejado ou consertado. Tudo está bem agora.",
+          descEn: "appreciating the beauty of a moment in which nothing needs to be corrected, planned, or fixed. All is well right now."
+        }
+      ]
+    }
+  ];
+
+  function selectThemeForSession(cycle: number, historyText: string): { category: ThemeDefinition; subtheme: { titlePt: string; titleEn: string; descPt: string; descEn: string } } {
+    const normalizedHistory = historyText.toLowerCase();
+    
+    // Identify which categories are already present in the history
+    const usedCategoryIds = new Set<string>();
+    for (const cat of THEME_CATEGORIES) {
+      const hasKeyword = cat.keywords.some(kw => normalizedHistory.includes(kw));
+      if (hasKeyword) {
+        usedCategoryIds.add(cat.id);
+      }
+    }
+
+    // Filter out used categories
+    let availableCategories = THEME_CATEGORIES.filter(cat => !usedCategoryIds.has(cat.id));
+
+    // If no available categories are left (or all used), fallback to all categories
+    if (availableCategories.length === 0) {
+      availableCategories = THEME_CATEGORIES;
+    }
+
+    // Randomly select an available category
+    const selectedCategory = availableCategories[Math.floor(Math.random() * availableCategories.length)];
+
+    // Randomly select a subtheme from the category
+    const selectedSubtheme = selectedCategory.subthemes[Math.floor(Math.random() * selectedCategory.subthemes.length)];
+
+    return {
+      category: selectedCategory,
+      subtheme: selectedSubtheme
+    };
+  }
+
   // API Route to generate oracle content
   app.post("/api/oracle", async (req, res) => {
     const language = req.body?.language || "en";
@@ -117,54 +411,92 @@ async function startServer() {
       tr: "Bir an için zihninizi dinlendirin. Bugün her şeyin bir cevaba ihtiyacı yok.\n\nYavaşça bir nefes alın. Bazı yollar sadece zorlamayı bıraktığımızda netleşir.\n\nKüçük bir adım yeterlidir. Huzur bulmak için kendinize zaman tanıyın.",
       nl: "Laat je gedachten even rusten. Niet alles heeft vandaag een antwoord nodig.\n\nHaal langzaam adem. Sommige paden worden pas helder als we stoppen met forceren.\n\nEen kleine stap is genoeg. Geef jezelf de tijd om rust te vinden.",
       pl: "Pozwól swojemu umysłowi przez chwilę odpocząć. Nie wszystko wymaga dzisiaj odpowiedzi.\n\nWeź powolny oddech. Niektóre ścieżki stają się jasne dopiero, gdy przestajemy pchać na siłę.\n\nMały krok w zupełności wystarczy. Daj sobie czas na odnalezienie spokoju.",
-      uk: "Дайте своєму розуму відпочити на мить. Не все потребує відповіді сьогодні.\n\nЗробіть повільний вдих. Деякі шляхи прояснюються лише тоді, коли ми перестаємо йти напролом.\n\nОдного маленького кроку цілком достатньо. Дайте собі час знайти спокій.",
+      uk: "Дайте своєму разуму відпочити на мить. Не все потребує відповіді сьогодні.\n\nЗробіть повільний вдих. Деякі шляхи прояснюються лише тоді, коли ми перестаємо йти напролом.\n\nОдного маленького кроку цілком достатньо. Дайте собі час знайти спокій.",
       id: "Istirahatkan pikiranmu sejenak. Tidak semuanya membutuhkan jawaban hari ini.\n\nTarik napas perlahan. Beberapa jalan hanya menjadi jelas ketika kita berhenti memaksakan diri.\n\nSatu langkah kecil saja sudah cukup. Beri dirimu waktu untuk menemukan kedamaian.",
       el: "Ξεκουράστε το μυαλό σας για μια στιγμή. Δεν χρειάζονται όλα μια απάντηση σήμερα.\n\nΠάρτε μια αργή ανάσα. Κάποια μονοπάτια ξεκαθαρίζουν μόνο όταν σταματάμε να πιέζουμε τα πράγματα.\n\nΈνα μικρό βήμα αρκεί. Δώστε στον εαυτό σας χρόνο για να βρει τη γαλήνη.",
-      he: "תן למחשבות שלך לנוח לרגע. לא הכל חייב לקבל תשובה היום.\n\nקח נשימה איטית. חלק מהשבילים מתבהרים רק כשאנחנו מפסיקים לדחוף קדימה.\n\nצעד קטן זה מספיק. תן לעצמך זמן למצוא שקט.",
+      he: "תן למחשבות שלך לנוח לרגע. לא הכל חייב לקבל תשובה היום.\n\nקח נשימה איטית. חלק מהשבילים מתבהרים רק כשאנחנו מפסיקים לדחוף קדימה.\n\nצעד קטן זה מספיק. תן לעצมך זמן למצוא שקט.",
       ro: "Odihnește-ți mintea pentru o clipă. Nu orice lucruri au nevoie de un răspuns astăzi.\n\nRespiră încet. Unele căi devin clare abia atunci când ne oprim din a mai forța lucrurile.\n\nUn pas mic este îndeajuns. Acordă-ți timpul necesar pentru a-ți regăsi liniștea.",
     };
 
     try {
-      const prompt = `You are Tiresias. Imagine there is a real person on the other side of the screen who just took a few minutes to ask for a response. They need to feel understood.
-They did not come looking for poetry. They came looking for meaning. They might be grieving, unemployed, afraid, sick, disappointed, hopeless, tired, lost, or starting a new phase. They are looking for something that makes their heart breathe a little better.
-Write thinking about this person. Do not write to produce a beautiful text; write to produce an encounter.
+      // Parse previous messages in this session
+      const previousMessages = theme ? theme.split(" || ") : [];
+      let historyContextBlock = "";
+      if (previousMessages.length > 0) {
+        historyContextBlock = `\n\nPREVIOUS MESSAGES GENERATED IN THIS USER SESSION (DO NOT REPEAT THEMES, IDEAS, OR METAPHORS SHOWN HERE):\n`;
+        previousMessages.forEach((msg, idx) => {
+          historyContextBlock += `Message ${idx + 1}:\n"""\n${msg}\n"""\n\n`;
+        });
+      }
 
-CRITICAL RULES:
-- IMPORTANT: You MUST write the final message ONLY in ${langName} (language code: ${language}). Do not write in English unless the selected language is English. Do not mix languages. The text MUST sound like it was originally written by an excellent native speaker. Never translate literally.
-- PREVIOUS CONTEXT: ${theme ? `The user recently reflected on: "${theme}". Keep your message in the same philosophical and emotional field without contradicting this context.` : `This is the first message for this user today.`}
-- Generate ONLY the message text. No prefixes, no titles, no explanations.
-- Speak directly and exclusively in ${langName}.
+      // Programmatically select a theme and subtheme
+      const { category, subtheme } = selectThemeForSession(cycle, theme);
+      console.log(`[ORACLE-THEME] Category chosen: ${category.id}. Subtheme: ${subtheme.titleEn}`);
 
-TONE & PRESENCE (LESS POETRY, MORE TRUTH):
-- TIRESIAS DOES NOT DESCRIBE. HE PERCEIVES. Do not describe poetic scenes. Do not turn every message into a metaphor. Do not try to impress with the beauty of the language.
-- Speak directly to the reader. Use the second person (e.g., "you"). Intimate, natural, human. Like someone looking into their eyes.
-- TIRESIAS DOES NOT GIVE ORDERS. Avoid phrases like: "Do this", "Go ahead", "Make a decision", "Change", "Start over today". Instead, awaken a perception. Examples: "Perhaps you are carrying a heavier burden than you need to", "Not every battle needs to be won immediately", "Sometimes the greatest show of strength is simply remaining present", "You do not need to prove your worth all the time".
-- These phrases embrace, they do not command.
-- The user must feel: "How did this message touch exactly what I am going through?"
-- A single delicate metaphor is worth more than five poetic images. Avoid constantly talking about wind, perfume, leaves, rivers, stars, dawn, silence, gardens, sea, or mountains.
-- Be like an extremely wise grandparent. Say few things, but let each sentence reach exactly where it was needed.
-- "I see what you perhaps cannot yet see." Say this without ever claiming supernatural powers.
-- Emotion before aesthetics. Always choose a profoundly human sentence over a merely beautiful one. The goal is for them to say: "I needed to hear this today."
+      const prompt = `You are Tiresias, a wise, serene, and deeply comforting oracle. A real human is sitting on the other side of this screen. They spent several minutes sintonizing their thoughts to receive this response. They need to feel personally seen, understood, and emotionally held.
 
-ABSOLUTE DIVERSITY:
-- DO NOT use generic openings. NEVER start with "Sometimes...", "Maybe...", "There are moments when...", "Not always...", "There are days when...", "You don't have to...", "It's normal...", "When...", "Even when...", "In some moments...", or their equivalents.
-- Start differently every single time: a statement, a question, a tiny observation, a universal memory, a contrast, a paradox, or a simple profound thought.
+YOUR FOCAL THEME FOR THIS MESSAGE:
+- Category: ${subtheme.titleEn} (${category.nameEn})
+- Specific Context: ${subtheme.descEn}
+
+Your message MUST be centered entirely on this subtheme. Do NOT talk about other concepts, and strictly avoid falling back to generic themes like "heavy fardos / loads / paths / journeys". Treat this specific theme with absolute focus and emotional depth.
+
+DIRECT, PERSONAL SPEECH & THE SECOND PERSON (CRITICAL):
+- Speak DIRECTLY to the reader in the SECOND PERSON ("you" / in Portuguese "você", "seu", "sua", "seus", "suas", "você sente", "você viveu", or their natural cultural/native equivalents).
+- The message must be guided by this personal contact. Do NOT use third-person generalizations like "people", "human beings", "humanity", "life teaches us", "as pessoas", "o ser humano", "a vida nos ensina", "o destino".
+- Make them feel: "This message is speaking directly to me, right now."
+- Be extremely close without inventing fake facts about their life. Do not assume they lost a job, got sick, got divorced, or made a specific choice. Instead, touch upon real, accessible human feelings and states of being (e.g., "Você pode estar tentando entender algo que ainda não encontrou nome", "O seu esforço talvez esteja sendo maior do que os outros conseguem perceber", "Você não precisa diminuir aquilo que sentiu apenas porque ninguém mais compreendeu", "Existe em você uma força que talvez tenha ficado escondida pelo cansaço").
+
+MINIMAL METAPHORS (CRITICAL):
+- Avoid heavy, overly dramatic, or mixed metaphors. No complex poetic ornaments.
+- Use at most ONE simple, clear metaphor per message. Never mix multiple metaphor fields (e.g. do not talk about lights, bridges, storms, rivers, seeds, and paths in the same text).
+- If a direct, literal expression of feeling works better, prioritize it over a metaphor.
+- NO flowery or cliché lines like "A luz atravessa as frestas da alma enquanto o tempo tece novos caminhos" or "O rio silencioso conduz as sementes do seu destino". Eliminate this completely.
+
+SIMPLE, GROUNDED LANGUAGE (STRICT):
+- Use common, clear, and emotionally resonant words. The depth must be in the idea, not in the complexity of the vocabulary.
+- Do NOT use sophisticated, pretentious, or archaic words. For example, in Portuguese, NEVER use: "inexorável", "implacável", "indelével", "tênue", "vicissitude", "efêmero", "limiar", "transcendência", "sutileza existencial", "insondável", "etéreo", "desígnio", "ressignificação", "plenitude interior", "dimensão imaterial" (or their equivalents in other languages).
+- A child or an elder should understand every word immediately.
+
+SPIRITUAL PRESENCE & LIGHT:
+- Convey a gentle, warm, and highly comforting presence of peace, clarity, and higher guidance.
+- Your words should carry a soft spiritual depth and warm energetic embrace.
+- CRITICAL: You MUST NEVER mention or write that "spirits", "entities", "guides", "mediumship", or "the oracle" is speaking. Do not use mystical terminology. It must feel like a warm clean frequency of light reflecting their own inner wisdom.
+- TIRESIAS DOES NOT GIVE ORDERS. Avoid commanding verbs: "Do this", "Go ahead", "Change", "Start over", "Siga", "Confie", "Permita-se". Instead, gently awaken a perception or validate their presence.
+
+POSITIVE & REASSURING OUTLOOK:
+- Even when recognizing pain, doubt, loss, or fatigue, always leave a real sense of possibility, dignity, hope, inner strength, or self-value.
+- Do NOT use toxic positivity, fake promises, or forced optimism ("everything will be perfect", "every pain has a reason", "keep smiling").
+- Instead, acknowledge their quiet power, their ability to remain present, or the gentle choices they can make today.
+- Some messages don't have to start with pain. They can recognize a positive shift, recent courage, an important bond, or a peaceful phase.
+
+SESSION HISTORY:
+${historyContextBlock ? historyContextBlock : "This is the first message for this user today."}
 
 CYCLE PROGRESSION AWARENESS:
-This is message number ${cycle} out of 3 in the user's current session.
-- Each message MUST have a completely unique opening structure, syntactic rhythm, and flow.
-- Advance the feeling. Do not reformulate the previous idea.
+This is Message ${cycle} of 3 in their session.
+- Ensure a completely unique opening, syntactic rhythm, and emotional flavor compared to previous messages.
 
-COHESION & SENSE (INTERNAL REVIEW):
-- The message MUST have a logical beginning, middle, and end.
-- Each sentence must logically follow the previous one. Do not jump between unrelated subjects.
-- DO NOT output truncated words, broken sentences, missing tokens, or meaningless characters. Ensure perfect grammar and coherence. 
+BANNED WORDS / CONCEPT ROOT PENALTIES:
+To prevent repetition, you are STRICTLY FORBIDDEN from using any of the following words (or their translations/synonyms/plurals/verb forms in ${langName}):
+- [PT] peso, carga, fardo, carregar, soltar, caminho, jornada, passo, silêncio, respirar, ferida, cicatriz, tempestade, luz, escuridão, porta, ponte, rio, mar, semente, florescer, recomeçar, seguir em frente
+- [EN] weight, burden, load, carry, release, path, journey, step, silence, breathe, wound, scar, storm, light, darkness, door, bridge, river, sea, seed, bloom, restart, move forward
+Ensure none of these are used! Explore fresh, clean, grounded, everyday vocabulary to express depth.
 
-FORMAT & LINE BREAKS (STRICT RULES):
-- The message MUST contain exactly 5 to 7 short sentences in total.
-- You MUST write exactly ONE SENTENCE PER LINE. After every period, you MUST insert a line break.
+PROHIBITED OPENERS:
+DO NOT start the message with any of these or their translations/synonyms: "Sometimes...", "Maybe...", "There are moments...", "It is not always...", "You have been carrying...", "You do not need...", "It might be...", "There are days...", "Even if...", "When life...", "Às vezes...", "Talvez...", "Há momentos em que...", "Nem sempre...", "Você tem carregado...", "Você não precisa...".
+Start directly with a profound statement, an intimate question, a concrete daily observation, or a warm validation.
+
+PROHIBITED ENDINGS:
+DO NOT end the message with clichés like "keep going", "one step at a time", "continue", "trust the path", "everything will pass", "allow yourself", "the answer will come", "you will succeed", "siga em frente", "um passo de cada vez", "continue", "tudo vai passar".
+End with an open, calming reflection, an intimate internal question that echoes, or a quiet validation of presence.
+
+LANGUAGE & FORMATTING:
+- Write the final message ONLY in ${langName}. Do NOT mix languages. Ensure perfect grammar, flow, and highly natural native phrasing.
+- Write EXACTLY 5 to 7 short sentences in total.
+- You MUST write exactly ONE SENTENCE PER LINE. Insert a line break (\\n) after every sentence.
 - Group the sentences into 2 or 3 paragraph blocks by inserting a blank line (\\n\\n) between them.
-- No emojis. NEVER use excessively intimate terms (e.g., "my love", "dear", "meu bem", etc.).`;
+- No emojis. No overly intimate/romantic terms.`;
 
       const ai = getAIClient();
 
@@ -193,9 +525,10 @@ FORMAT & LINE BREAKS (STRICT RULES):
           if (!language.startsWith("en")) {
             const lowerText = responseText.toLowerCase();
             const englishLeak = lowerText.match(
-              /\\b(the|and|is|are|will|come back later|take care)\\b/,
+              /\b(the|and|is|are|will|come back later|take care)\b/,
             );
             if (englishLeak) {
+              console.log("Validation failed: English leak detected");
               continue; // retry
             }
           }
@@ -215,17 +548,54 @@ FORMAT & LINE BREAKS (STRICT RULES):
             "às vezes", "as vezes", "talvez", "há momentos em que", "nem sempre",
             "existem dias em que", "você não precisa", "é normal", "quando", "mesmo quando",
             "em alguns momentos", "sometimes", "maybe", "there are moments", "not always",
-            "a veces", "tal vez", "hay momentos en que", "a gente se perde"
+            "a veces", "tal vez", "hay momentos en que", "a gente se perde", "você tem carregado",
+            "pode ser que", "existem dias", "quando a vida", "you have been carrying", "you don't have to",
+            "it might be", "there are days", "even if", "when life"
           ];
           
           const startsWithBanned = bannedOpenings.some(phrase => lowerTrimmed.startsWith(phrase));
           if (startsWithBanned) {
-            console.log("Validation failed: Banned opening detected");
+            console.log("Validation failed: Banned opening detected:", lowerTrimmed.substring(0, 30));
             continue; // retry
           }
 
-          // 3. Must not have obvious cut-offs or hanging conjunctions at the end
-          const words = trimmedText.split(/\\s+/);
+          // 3. Must not have overused endings
+          const bannedEndings = [
+            "siga em frente", "um passo de cada vez", "continue", "confie no caminho", "tudo vai passar",
+            "permita-se", "a resposta virá", "você vai conseguir", "keep going", "one step at a time",
+            "everything will pass", "trust the path", "allow yourself", "the answer will come", "you will succeed"
+          ];
+          const endsWithBanned = bannedEndings.some(phrase => lowerTrimmed.endsWith(phrase) || lowerTrimmed.endsWith(phrase + ".") || lowerTrimmed.endsWith(phrase + "!"));
+          if (endsWithBanned) {
+            console.log("Validation failed: Banned ending detected:", lowerTrimmed.substring(lowerTrimmed.length - 30));
+            continue; // retry
+          }
+
+          // 4. Strong penalty on overused words unless category is specifically about inner_life / fardos (and even then we limit it)
+          const overusedWords = ["peso", "carga", "fardo", "carregar", "fardos", "cargas", "pesos"];
+          const containsOverused = overusedWords.some(w => lowerTrimmed.includes(w));
+          if (containsOverused && category.id !== "inner_life") {
+            console.log("Validation failed: Overused words detected outside allowed category");
+            continue; // retry
+          }
+
+          // 4b. Strict filter for sophisticated/rebuscadas/pretentious words
+          const fancyWords = [
+            "inexorável", "inexoravel", "implacável", "implacavel", "indelével", "indelevel", "tênue", "tenue", 
+            "vicissitude", "efêmero", "efemero", "limiar", "transcendência", "transcendencia", "insondável", "insondavel", 
+            "etéreo", "etereo", "desígnio", "designio", "ressignificar", "ressignificação", "ressignificacao", 
+            "sutileza", "imaterial", "inexorable", "implacable", "indelible", "tenuous", "vicissitudes", "ephemeral", 
+            "threshold", "transcendence", "unfathomable", "ethereal", "designation", "resignification", "subtlety", 
+            "immaterial", "plenitude"
+          ];
+          const containsFancy = fancyWords.some(w => lowerTrimmed.includes(w));
+          if (containsFancy) {
+            console.log("Validation failed: Fancy/rebuscado word detected in text");
+            continue; // retry
+          }
+
+          // 5. Must not have obvious cut-offs or hanging conjunctions at the end
+          const words = trimmedText.split(/\s+/);
           const lastWord = words[words.length - 1].replace(/[^a-zA-ZáéíóúãõçÁÉÍÓÚÃÕÇ]/g, "").toLowerCase();
           const hangingWords = ["de", "para", "com", "e", "ou", "mas", "que", "se", "a", "o", "as", "os", "um", "uma", "in", "of", "to", "and", "or", "but"];
           if (hangingWords.includes(lastWord)) {
@@ -260,6 +630,7 @@ FORMAT & LINE BREAKS (STRICT RULES):
       res.json({ message: fallback, fallback: true });
     }
   });
+
 
   // API Route for Speechify text-to-speech prep
   app.post("/api/speech", async (req, res) => {

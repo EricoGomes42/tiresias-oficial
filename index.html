@@ -1941,6 +1941,13 @@
           margin-left: -5px;
           width: 775px;
         }
+        div:nth-of-type(6) > div:nth-of-type(1) > main:nth-of-type(1) > div:nth-of-type(1) > button#coreBtn:nth-of-type(1) {
+          margin-bottom: -350px;
+          margin-top: 55px;
+          padding-bottom: 0px;
+          margin-right: 18.0417px;
+          margin-left: 18.0312px;
+        }
       }
 
       @media (min-width: 1025px) {
@@ -2020,7 +2027,7 @@
 
         /* -- HEADER (Largura total, topo) -- */
         .layout-wrapper header {
-          grid-column: 1 / -1;
+          grid-column: 2;
           grid-row: 1;
           width: 100%;
           margin: 0;
@@ -2075,7 +2082,7 @@
         }
         .ad-sidebar.left {
           grid-column: 1;
-          grid-row: 2;
+          grid-row: 1 / -1;
           width: 100%;
           height: 100%;
           border-right: none;
@@ -2083,7 +2090,7 @@
         }
         .ad-sidebar.right {
           grid-column: 3;
-          grid-row: 2;
+          grid-row: 1 / -1;
           width: 100%;
           height: 100%;
           border-left: none;
@@ -2119,19 +2126,35 @@
           max-width: 100%;
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: flex-end !important;
           align-items: center;
-          margin-top: 150px;
+          margin-top: 0 !important;
+          padding-top: 0 !important;
           margin-left: auto;
           margin-right: auto;
           padding-left: 0;
           padding-right: 0;
-          transform: translateY(20px);
+          transform: none;
           left: auto;
           right: auto;
           position: relative;
           z-index: 20;
           gap: 40px;
+        }
+
+        .ritual-controls {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 100%;
+          gap: 40px;
+          transform: translateY(13px);
+        }
+
+        .ritual-controls #instructionTx {
+          margin-top: 0px;
+          margin-bottom: -23px !important;
+          transform: translateY(12px);
         }
 
         /* Instrução Translucida estilo mobile/tablet mas no centro */
@@ -2208,9 +2231,9 @@
 
         /* -- FOOTER (Largura total, rodapé) -- */
         .layout-wrapper footer {
-          position: absolute;
-          bottom: 0;
-          left: 0;
+          position: relative;
+          grid-column: 2;
+          grid-row: 3;
           width: 100%;
           background: rgba(5, 8, 17, 1);
           border-top: 1px solid rgba(226, 192, 121, 0.3);
@@ -2705,10 +2728,14 @@
           align-items: center;
           min-width: 160px;
           min-height: 600px;
-          transform: translateY(-90px);
+          transform: none;
         }
-        .ads-desktop [data-type="_mgwidget"] {
-          margin-top: 0 !important;
+        #adsense-sidebar-left .ads-desktop [data-type="_mgwidget"] {
+          margin-top: 33px !important;
+          margin-bottom: 0 !important;
+        }
+        #adsense-sidebar-right .ads-desktop [data-type="_mgwidget"] {
+          margin-top: 40px !important;
           margin-bottom: 0 !important;
         }
         .sidebar-spacer {
@@ -2890,7 +2917,7 @@
         id="adsense-sidebar-left"
       >
         <div class="ads-desktop">
-          <div data-type="_mgwidget" data-widget-id="2049124" style="margin-top: -72px; margin-left: 0px;"></div>
+          <div data-type="_mgwidget" data-widget-id="2049124" style="margin-top: 22px; margin-left: 0px;"></div>
           <script>
             (function(w,q){
               w[q]=w[q]||[];
@@ -3085,21 +3112,23 @@
         </header>
 
         <main class="core-stage">
-          <div class="instruction" id="instructionTx">
-            <span class="desktop-text"
-              >Respire fundo.<br class="tablet-br" />
-              Entre em silêncio.<br class="tablet-br" />
-              Reflita sobre seu momento.<br />O oráculo tem algo a
-              revelar...</span
-            ><span class="desktop-only-text"
-              >Respire fundo.<br />Entre em silêncio.<br />Reflita sobre seu momento.<br />O oráculo tem algo a revelar...</span
-            ><span class="mobile-text"
-              >Take a deep breath.<br />Enter silence.<br />Reflect on your
-              moment.<br />The oracle has something<br />to reveal...</span
-            >
-          </div>
+          <div class="ritual-controls">
+            <div class="instruction" id="instructionTx">
+              <span class="desktop-text"
+                >Respire fundo.<br class="tablet-br" />
+                Entre em silêncio.<br class="tablet-br" />
+                Reflita sobre seu momento.<br />O oráculo tem algo a
+                revelar...</span
+              ><span class="desktop-only-text"
+                >Respire fundo.<br />Entre em silêncio.<br />Reflita sobre seu momento.<br />O oráculo tem algo a revelar...</span
+              ><span class="mobile-text"
+                >Take a deep breath.<br />Enter silence.<br />Reflect on your
+                moment.<br />The oracle has something<br />to reveal...</span
+              >
+            </div>
 
-          <button class="btn-glass" id="coreBtn">Begin Ritual</button>
+            <button class="btn-glass" id="coreBtn">Begin Ritual</button>
+          </div>
         </main>
 
         <footer>
@@ -3130,7 +3159,7 @@
         id="adsense-sidebar-right"
       >
         <div class="ads-desktop">
-          <div data-type="_mgwidget" data-widget-id="2049125" style="margin-top: -67px; margin-right: 0px; margin-bottom: 61px; height: 539.089px;"></div>
+          <div data-type="_mgwidget" data-widget-id="2049125" style="margin-top: -64px; margin-right: 0px; margin-bottom: 61px; height: 539.089px;"></div>
           <script>
             (function(w,q){
               w[q]=w[q]||[];
@@ -5772,7 +5801,8 @@
           const applyMessage = (message) => {
             if (message) {
               DOM.txt.innerHTML = window.formatWisdomMessage(message);
-              window.tiresiasSessionTheme = message.substring(0, 50); // Store start of message to keep context
+              // Accumulate full messages in session history separated by ' || '
+              window.tiresiasSessionTheme = (window.tiresiasSessionTheme ? window.tiresiasSessionTheme + " || " : "") + message;
             } else {
               DOM.txt.innerHTML = window.formatWisdomMessage(t.limitMsg || "The message was lost in silence. Try again later.");
             }
@@ -5808,6 +5838,83 @@
       const synth = window.speechSynthesis;
       let utterance = null;
       let currentAudioObj = null;
+      let speechTimeout = null;
+      let enforcePlaybackRate = null;
+
+      // Generates a silent PCM WAV file of specified duration in milliseconds
+      function generateSilentWav(durationMs) {
+        const sampleRate = 8000;
+        const numChannels = 1;
+        const bitsPerSample = 16;
+        const numSamples = Math.floor((sampleRate * durationMs) / 1000);
+        const dataSize = numSamples * (bitsPerSample / 8);
+        const fileSize = 36 + dataSize;
+        
+        const buffer = new ArrayBuffer(44 + dataSize);
+        const view = new DataView(buffer);
+        
+        // RIFF identifier
+        view.setUint32(0, 0x52494646, false); // "RIFF"
+        view.setUint32(4, fileSize, true);
+        view.setUint32(8, 0x57415645, false); // "WAVE"
+        view.setUint32(12, 0x666d7420, false); // "fmt "
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, numChannels, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * numChannels * (bitsPerSample / 8), true);
+        view.setUint16(32, numChannels * (bitsPerSample / 8), true);
+        view.setUint16(34, bitsPerSample, true);
+        view.setUint32(36, 0x64617461, false); // "data"
+        view.setUint32(40, dataSize, true);
+        
+        // Convert ArrayBuffer to Base64
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return "data:audio/wav;base64," + btoa(binary);
+      }
+
+      // Plays 800ms of real physical digital silence in the same session before finishing playback
+      function playSilenceAndThen(callback) {
+        if (!currentAudioObj) {
+          callback();
+          return;
+        }
+
+        // Remove the event listeners that enforce target speed to let silent audio play naturally
+        if (enforcePlaybackRate) {
+          currentAudioObj.removeEventListener("play", enforcePlaybackRate);
+          currentAudioObj.removeEventListener("playing", enforcePlaybackRate);
+          currentAudioObj.removeEventListener("canplay", enforcePlaybackRate);
+          currentAudioObj.removeEventListener("ratechange", enforcePlaybackRate);
+        }
+
+        // Reset playbackRate to 1.0 for standard silence duration timing
+        currentAudioObj.playbackRate = 1.0;
+        currentAudioObj.defaultPlaybackRate = 1.0;
+
+        currentAudioObj.onended = () => {
+          callback();
+        };
+        currentAudioObj.onerror = () => {
+          callback();
+        };
+
+        try {
+          currentAudioObj.src = generateSilentWav(800); // 800ms of true digital silence
+          currentAudioObj.play().catch((err) => {
+            console.error("Silent WAV playback failed, finalizing", err);
+            callback();
+          });
+        } catch (err) {
+          console.error("Error setting silent WAV, finalizing", err);
+          callback();
+        }
+      }
 
       function getMaleVoice(lang) {
         if (!synth) return null;
@@ -5853,6 +5960,10 @@
       }
 
       window.stopSpeech = function () {
+        if (speechTimeout) {
+          clearTimeout(speechTimeout);
+          speechTimeout = null;
+        }
         if (currentAudioObj) {
           currentAudioObj.pause();
           currentAudioObj.currentTime = 0;
@@ -5872,32 +5983,62 @@
           return;
         }
         
-        // Add natural pauses for more contemplative pacing
-        const speechMsg = msg;
-        
-        utterance = new SpeechSynthesisUtterance(speechMsg);
-        utterance.lang = currentLang || "pt";
-
-        const voice = getMaleVoice(currentLang || "pt");
-        if (voice) {
-          utterance.voice = voice;
+        synth.cancel();
+        if (speechTimeout) {
+          clearTimeout(speechTimeout);
+          speechTimeout = null;
         }
 
-        utterance.pitch = 0.9;
-        utterance.rate = 0.85;
+        // Split message into sentences by punctuation (. ! ?) but keep the punctuation and filter out empty strings
+        const sentences = msg.split(/(?<=[.!?])\s+/).filter((s) => s.trim().length > 0);
+        let currentIndex = 0;
 
-        utterance.onend = () => {
-          isSpeaking = false;
-          updateListenIcon(false);
-        };
+        function speakNext() {
+          if (!isSpeaking) return;
 
-        utterance.onerror = (e) => {
-          console.error("SpeechSynthesis error", e);
-          isSpeaking = false;
-          updateListenIcon(false);
-        };
+          if (currentIndex >= sentences.length) {
+            // Pausa final contemplativa (respiro) para deixar a última frase assentar emocionalmente
+            speechTimeout = setTimeout(() => {
+              isSpeaking = false;
+              updateListenIcon(false);
+            }, 800); // 800ms respiro contemplativo antes de encerrar
+            return;
+          }
 
-        synth.speak(utterance);
+          const sentenceText = sentences[currentIndex];
+          utterance = new SpeechSynthesisUtterance(sentenceText);
+          utterance.lang = currentLang || "pt";
+
+          const voice = getMaleVoice(currentLang || "pt");
+          if (voice) {
+            utterance.voice = voice;
+          }
+
+          utterance.pitch = 0.9;
+          utterance.rate = 0.95; // Velocidade natural e ligeiramente serena (revertido de 0.70)
+
+          utterance.onend = () => {
+            currentIndex++;
+            if (currentIndex < sentences.length) {
+              // Pausa natural entre frases simulando respiração
+              speechTimeout = setTimeout(() => {
+                speakNext();
+              }, 750); // 750ms de pausa natural
+            } else {
+              speakNext();
+            }
+          };
+
+          utterance.onerror = (e) => {
+            console.error("SpeechSynthesis error", e);
+            currentIndex++;
+            speakNext();
+          };
+
+          synth.speak(utterance);
+        }
+
+        speakNext();
       }
 
       window.toggleSpeech = async function () {
@@ -5919,6 +6060,23 @@
 
         // Initialize Audio object synchronously to bypass autoplay restrictions on mobile
         currentAudioObj = new Audio();
+        
+        // Configuração de redução de velocidade para o player Speechify (redução sutil de ~5% para voz serena e natural)
+        const targetPlaybackRate = 0.95; 
+        currentAudioObj.defaultPlaybackRate = targetPlaybackRate;
+        currentAudioObj.playbackRate = targetPlaybackRate;
+        
+        // Evita que navegadores resetem o playbackRate ao carregar ou dar play
+        enforcePlaybackRate = () => {
+          if (currentAudioObj) {
+            currentAudioObj.playbackRate = targetPlaybackRate;
+          }
+        };
+        currentAudioObj.addEventListener("play", enforcePlaybackRate);
+        currentAudioObj.addEventListener("playing", enforcePlaybackRate);
+        currentAudioObj.addEventListener("canplay", enforcePlaybackRate);
+        currentAudioObj.addEventListener("ratechange", enforcePlaybackRate);
+
         currentAudioObj.src =
           "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
         currentAudioObj.play().catch(() => {});
@@ -5930,13 +6088,17 @@
         if (window.prefetchedAudioSrc) {
            console.log("using prefetched Speechify audio");
            currentAudioObj.src = window.prefetchedAudioSrc;
+           enforcePlaybackRate();
            currentAudioObj.play().catch(err => {
               console.error("Audio playback error:", err);
               fallbackToSynthesis(msg);
            });
            currentAudioObj.onended = () => {
-             isSpeaking = false;
-             updateListenIcon(false);
+             playSilenceAndThen(() => {
+               isSpeaking = false;
+               currentAudioObj = null;
+               updateListenIcon(false);
+             });
            };
            return;
         }
@@ -5963,10 +6125,13 @@
                 ? data.audioBase64
                 : "data:audio/mpeg;base64," + data.audioBase64;
               currentAudioObj.src = audioSrc;
+              enforcePlaybackRate();
               currentAudioObj.onended = () => {
-                isSpeaking = false;
-                currentAudioObj = null;
-                updateListenIcon(false);
+                playSilenceAndThen(() => {
+                  isSpeaking = false;
+                  currentAudioObj = null;
+                  updateListenIcon(false);
+                });
               };
               currentAudioObj.onerror = () => {
                 currentAudioObj = null;
@@ -5974,6 +6139,7 @@
                 fallbackToSynthesis(msg);
               };
               await currentAudioObj.play();
+              enforcePlaybackRate();
               return;
             }
           }
@@ -6238,6 +6404,7 @@
 
       window.resetRitual = function () {
         sessionStorage.removeItem("tiresiasCycles");
+        window.tiresiasSessionTheme = ""; // Reset session theme history
         window.resetAffiliateCampaignCycle();
         ritualCountForSession = 0;
         flowState = 0;
