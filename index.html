@@ -1622,7 +1622,8 @@
       .mobile-only {
         display: none !important;
       }
-      .ads-tablet {
+      .ads-tablet,
+      .tablet-sidebar-spacer {
         display: none !important;
       }
       .ads-desktop {
@@ -1665,10 +1666,12 @@
         }
         .ads-tablet {
           display: flex !important;
-          justify-content: center;
+          flex-direction: column;
+          justify-content: flex-start;
           align-items: center;
-          width: 100%;
-          height: 100%;
+          width: 100% !important;
+          margin: 0 !important;
+          height: auto !important;
         }
         br.tablet-br {
           display: block;
@@ -2513,7 +2516,8 @@
         }
 
         body.state-revealed .btn-wisdom-action {
-          min-height: 52px !important;
+          min-height: 50px !important;
+          max-height: 54px !important;
           padding: 10px 18px !important;
           font-size: 13px !important;
           letter-spacing: 0.14em !important;
@@ -2644,6 +2648,212 @@
         }
       }
 
+      /* Ecosystem Sidebar Brands */
+      .tablet-sidebar-brand {
+        display: none;
+      }
+      .sidebar-brand {
+        margin-top: 16px;
+        margin-bottom: 12px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        width: 100%;
+      }
+      .brand-logo-img {
+        display: block;
+        margin: 0 auto;
+        opacity: 0.6;
+        transition: opacity 0.3s ease, transform 0.2s ease;
+        max-width: 170px;
+        max-height: 54px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
+      }
+      .brand-logo-img:hover {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      @media (min-width: 1025px) {
+        .ad-sidebar.left,
+        .ad-sidebar.right {
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: center;
+        }
+        .sidebar-brand {
+          position: static;
+          width: 100%;
+          margin: 12px auto 16px auto;
+        }
+        .sidebar-brand-left {
+          margin-top: 10px !important;
+          padding-top: 0 !important;
+        }
+        .sidebar-brand-right {
+          margin-top: 12px !important;
+          padding-top: 0 !important;
+        }
+        #adsense-sidebar-right .ads-desktop {
+          margin-top: -14px !important;
+        }
+        .brand-logo-img {
+          max-width: 145px;
+          max-height: 48px;
+        }
+      }
+      @media (min-width: 768px) and (max-width: 1024px) {
+        .ad-sidebar.left,
+        .ad-sidebar.right {
+          display: flex !important;
+          flex-direction: column;
+          min-height: 100% !important;
+          height: 100% !important;
+          margin-top: 0 !important;
+        }
+        .ads-tablet {
+          flex: 0 0 auto !important;
+        }
+        .tablet-sidebar-spacer {
+          display: block !important;
+          flex: 1 1 auto !important;
+          min-height: 0 !important;
+          width: 100%;
+        }
+        .sidebar-brand {
+          display: none !important;
+        }
+        .tablet-sidebar-brand {
+          flex: 0 0 auto !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 100% !important;
+          margin: 8px auto 0 !important;
+          padding: 0 !important;
+          position: static !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          transform: none !important;
+        }
+        .tablet-sidebar-brand a {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 82px !important;
+          height: 82px !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        .tablet-sidebar-brand img {
+          display: block !important;
+          width: 82px !important;
+          height: 82px !important;
+          max-width: 82px !important;
+          max-height: 82px !important;
+          object-fit: contain !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
+      }
+      @media (max-width: 767px) {
+        .sidebar-brand {
+          display: none !important;
+        }
+      }
+
+      .modal-ecosystem-signature {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        border-top: 1px solid rgba(204, 166, 93, 0.2);
+        padding-top: 20px;
+        width: 100%;
+      }
+      .signature-label {
+        font-size: 9px;
+        color: #cca65d;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        opacity: 0.7;
+      }
+      .signature-logos {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .signature-separator {
+        width: 1px;
+        height: 24px;
+        background: linear-gradient(180deg, rgba(204, 166, 93, 0) 0%, rgba(204, 166, 93, 0.4) 50%, rgba(204, 166, 93, 0) 100%);
+      }
+      .signature-logo {
+        height: 16px;
+        width: auto;
+        opacity: 0.8;
+        transition: opacity 0.3s;
+      }
+      .signature-logo:hover {
+        opacity: 1;
+      }
+
+      /* Desktop Signature Overrides */
+      @media (min-width: 1025px) {
+        .signature-logos {
+          gap: 20px !important;
+        }
+        .signature-logo {
+          height: auto !important;
+          max-width: 145px !important;
+          max-height: 42px !important;
+        }
+      }
+
+      /* Tablet Signature Overrides */
+      @media (min-width: 768px) and (max-width: 1024px) {
+        .modal-ecosystem-signature {
+          margin-top: 18px !important;
+          margin-bottom: 8px !important;
+          padding-top: 14px !important;
+          padding-bottom: 4px !important;
+        }
+        .signature-logos {
+          gap: 16px !important;
+          margin-top: 8px !important;
+        }
+        .signature-logo {
+          height: auto !important;
+          max-width: 125px !important;
+          max-height: 38px !important;
+        }
+      }
+
+      /* Mobile Signature Overrides */
+      @media (max-width: 767px) {
+        .modal-ecosystem-signature {
+          margin-top: 18px !important;
+          padding-top: 14px !important;
+          padding-bottom: 12px !important;
+        }
+        .signature-logos {
+          gap: 14px !important;
+          margin-top: 8px !important;
+        }
+        .signature-logo {
+          height: auto !important;
+          max-width: 105px !important;
+          max-height: 34px !important;
+        }
+      }
     </style>
     <!-- Adskeeper Loader -->
     <script src="https://jsc.adskeeper.com/site/1102886.js" async></script>
@@ -2683,10 +2893,10 @@
       <aside
         class="ad-sidebar left"
         id="adsense-sidebar-left"
-        style="min-width: 160px"
+        style="min-width: 160px; margin-top: -100px; height: 560.167px;"
       >
-        <div class="ads-desktop">
-          <div data-type="_mgwidget" data-widget-id="2049124" style="margin-top: -185px; height: 522.875px;"></div>
+        <div class="ads-desktop" style="margin-top: 38px; height: 500.177px;">
+          <div data-type="_mgwidget" data-widget-id="2049124" style="margin-top: -91px; height: 522.875px;"></div>
           <script>
             (function(w,q){
               w[q]=w[q]||[];
@@ -2702,6 +2912,20 @@
               w[q].push(["_mgc.load"]);
             })(window,"_mgq");
           </script>
+        </div>
+        <div class="tablet-sidebar-spacer"></div>
+        <div class="sidebar-brand sidebar-brand-left" style="margin-top: 11px;">
+          <a href="https://dfolga.com/" target="_blank" rel="noopener noreferrer" title="Visit dfolga.com">
+            <picture>
+              <source media="(min-width: 768px) and (max-width: 1024px)" srcset="/dfolga-e-utimeoff/dfolga-banner-quadrado.webp">
+              <img src="/dfolga-e-utimeoff/dfolga-logo-novo.webp" alt="dfolga.com" class="brand-logo-img">
+            </picture>
+          </a>
+        </div>
+        <div class="tablet-sidebar-brand tablet-sidebar-brand-left">
+          <a href="https://dfolga.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit dfolga.com">
+            <img src="/dfolga-e-utimeoff/dfolga-banner-quadrado.webp" alt="dfolga.com" style="margin-top: -169px;">
+          </a>
         </div>
       </aside>
 
@@ -2910,10 +3134,10 @@
       <aside
         class="ad-sidebar right"
         id="adsense-sidebar-right"
-        style="min-width: 160px"
+        style="min-width: 160px; margin-top: -42px;"
       >
-        <div class="ads-desktop">
-          <div data-type="_mgwidget" data-widget-id="2049125" style="margin-top: -136px; height: 550.292px;"></div>
+        <div class="ads-desktop" style="margin-top: 0px;">
+          <div data-type="_mgwidget" data-widget-id="2049125" style="margin-top: -94px; height: 529.286px;"></div>
           <script>
             (function(w,q){
               w[q]=w[q]||[];
@@ -2921,14 +3145,28 @@
             })(window,"_mgq");
           </script>
         </div>
-        <div class="ads-tablet" style="margin-left: 0px; margin-top: -10px;">
-          <div data-type="_mgwidget" data-widget-id="2052923"></div>
+        <div class="ads-tablet" style="width: 159.167px; margin-left: 6px;">
+          <div data-type="_mgwidget" data-widget-id="2052923" style="margin-top: -80px; margin-left: 0px; padding: 0px; width: 159.167px;"></div>
           <script>
             (function(w,q){
               w[q]=w[q]||[];
               w[q].push(["_mgc.load"]);
             })(window,"_mgq");
           </script>
+        </div>
+        <div class="tablet-sidebar-spacer"></div>
+        <div class="sidebar-brand sidebar-brand-right">
+          <a href="https://utimeoff.com/" target="_blank" rel="noopener noreferrer" title="Visit uTimeOff">
+            <picture>
+              <source media="(min-width: 768px) and (max-width: 1024px)" srcset="/dfolga-e-utimeoff/utimeoff-banner-quadrado.webp">
+              <img src="/dfolga-e-utimeoff/utimeoff-logo-original.webp" alt="uTimeOff" class="brand-logo-img">
+            </picture>
+          </a>
+        </div>
+        <div class="tablet-sidebar-brand tablet-sidebar-brand-right">
+          <a href="https://utimeoff.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit uTimeOff">
+            <img src="/dfolga-e-utimeoff/utimeoff-banner-quadrado.webp" alt="uTimeOff" style="margin-top: -155px; margin-left: 20px;">
+          </a>
         </div>
       </aside>
     </div>
@@ -3349,6 +3587,18 @@
           </svg>
           <span id="t-listen-text">Ouvir</span>
         </button>
+      </div>
+      <div class="modal-ecosystem-signature">
+        <span class="signature-label">AN EXPERIENCE PRESENTED BY</span>
+        <div class="signature-logos">
+          <a href="https://dfolga.com" target="_blank" rel="noopener noreferrer">
+            <img src="/dfolga-e-utimeoff/dfolga-logo-novo.webp" alt="dfolga.com" class="signature-logo">
+          </a>
+          <span class="signature-separator"></span>
+          <a href="https://utimeoff.com" target="_blank" rel="noopener noreferrer">
+            <img src="/dfolga-e-utimeoff/utimeoff-logo-original.webp" alt="uTimeOff" class="signature-logo" style="transform: translateY(16%);">
+          </a>
+        </div>
       </div>
     </div>
 
