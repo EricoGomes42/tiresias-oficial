@@ -5745,6 +5745,7 @@
             .then((data) => {
               console.log("--- FRONTEND: POST-API/ORACLE ---");
               console.log("Fallback acionado (Oracle)?", !!data.fallback);
+              console.log("[DEBUG] Texto recebido no frontend:", JSON.stringify(data.message));
               
               window.prefetchedMessage = data.message;
 
@@ -5799,6 +5800,13 @@
           DOM.btn.disabled = true;
 
           const applyMessage = (message) => {
+            console.log("[DEBUG] Texto imediatamente antes da renderização:", JSON.stringify(message));
+            
+            // Normalize any rogue \N into newlines before rendering
+            if (message && typeof message === 'string') {
+              message = message.replace(/\\N/g, '\n').replace(/\\n/g, '\n');
+            }
+
             if (message) {
               DOM.txt.innerHTML = window.formatWisdomMessage(message);
               // Accumulate full messages in session history separated by ' || '

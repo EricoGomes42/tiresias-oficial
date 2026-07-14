@@ -1,0 +1,41 @@
+--- server.ts
++++ server.ts
+@@ -494,8 +494,8 @@
+ LANGUAGE & FORMATTING:
+ - Write the final message ONLY in ${langName}. Do NOT mix languages. Ensure perfect grammar, flow, and highly natural native phrasing.
+ - Write EXACTLY 5 to 7 short sentences in total.
+-- You MUST write exactly ONE SENTENCE PER LINE. Insert a line break (\\n) after every sentence.
+-- Group the sentences into 2 or 3 paragraph blocks by inserting a blank line (\\n\\n) between them.
++- You MUST write exactly ONE SENTENCE PER LINE. Insert a line break after every sentence.
++- Group the sentences into 2 or 3 paragraph blocks by inserting a blank line between them.
+ - No emojis. No overly intimate/romantic terms.\`;
+ 
+       const ai = getAIClient();
+@@ -520,6 +520,7 @@
+           });
+ 
+           responseText = response.text || "";
++          console.log("[DEBUG] Resposta bruta do Gemini:", JSON.stringify(responseText));
+ 
+           // Language Validation (very basic check for unwanted English phrases if lang is not english)
+           if (!language.startsWith("en")) {
+@@ -604,6 +605,7 @@
+           }
+ 
+           valid = true;
++          console.log("[DEBUG] Texto apos validacoes:", JSON.stringify(responseText));
+         } catch (e: any) {
+           if (attempts < 7) {
+             // sleep 1 second and retry
+@@ -618,7 +620,10 @@
+       }
+ 
+       console.log("Gemini respondeu com sucesso?");
+-      res.json({ message: responseText });
++      
++      const finalMessage = responseText.replace(/\\N/g, '\n').replace(/\\\\n/g, '\n').replace(/\\\\N/g, '\n');
++      console.log("[DEBUG] Texto enviado pela API:", JSON.stringify(finalMessage));
++      res.json({ message: finalMessage });
+     } catch (error: any) {
+       console.error("API call error:", error.message);
+       let fallback = fallbacks["en"];
