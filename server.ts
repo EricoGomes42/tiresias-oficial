@@ -27,7 +27,7 @@ function getAIClient(): GoogleGenAI {
 
 async function startServer() {
   const app = express();
-  const PORT = Number(process.env.PORT) || 3000;
+  const PORT = process.env.PORT || 3000;
 
   console.log("Gemini configured:", Boolean(process.env.GEMINI_API_KEY));
   console.log("Speechify configured:", Boolean(process.env.SPEECHIFY_API_KEY));
@@ -394,29 +394,147 @@ async function startServer() {
     console.log("cycle:", cycle);
     console.log("GEMINI_API_KEY existe?", Boolean(process.env.GEMINI_API_KEY));
 
-    // Fallback strings - no generic endings
-    const fallbacks: Record<string, string> = {
-      en: "Rest your mind for a moment. Not everything needs an answer today.\n\nTake a slow breath. Some paths clear only when we stop pushing forward.\n\nA small step is enough. Give yourself time to find peace.",
-      pt: "Tranquilize seu pensamento por um instante. Nem tudo exige uma resposta hoje.\n\nRespire devagar. Certos caminhos só se revelam quando paramos de avançar à força.\n\nUm pequeno passo já basta. Dê tempo para que sua paz retorne.",
-      es: "Descansa tu mente por un momento. No todo necesita una respuesta hoy.\n\nRespira despacio. Algunos caminos solo se aclaran cuando dejamos de empujar.\n\nUn pequeño paso es suficiente. Date tiempo para encontrar la paz.",
-      fr: "Reposez votre esprit un instant. Tout ne nécessite pas une réponse aujourd'hui.\n\nRespirez lentement. Certains chemins ne s'éclaircissent que lorsqu'on arrête de forcer.\n\nUn petit pas suffit. Laissez-vous le temps de trouver la paix.",
-      de: "Ruhen Sie Ihre Gedanken für einen Moment aus. Nicht alles braucht heute eine Antwort.\n\nAtmen Sie langsam. Manche Wege werden erst klar, wenn wir nicht mehr drängen.\n\nEin kleiner Schritt ist genug. Geben Sie sich Zeit, Frieden zu finden.",
-      it: "Riposa la mente per un istante. Non tutto ha bisogno di una risposta oggi.\n\nFai un bel respiro lento. Alcuni sentieri si chiariscono solo quando smettiamo di forzare.\n\nUn piccolo passo è sufficiente. Concediti del tempo per trovare la pace.",
-      ja: "少しの間、心を休ませてください。今日すべてに答えを出す必要はありません。\n\nゆっくりと深呼吸をしましょう。前に進むのをやめた時にだけ、見えてくる道があります。\n\n小さな一歩で十分です。平和を見つけるための時間を自分に与えてください。",
-      ko: "잠시 마음을 쉬게 하세요. 모든 것에 오늘 대답할 필요는 없습니다.\n\n천천히 숨을 쉬세요. 억지로 나아가는 것을 멈출 때 비로소 분명해지는 길도 있습니다.\n\n작은 한 걸음이면 충분합니다. 평화를 찾을 시간을 스스로에게 주세요.",
-      zh: "让你的心智稍作休息。今天并不是所有事情都需要答案。\n\n深吸一口气。有些道路只有在停止强求时才会清晰。\n\n一小步就足够了。给自己留出寻找平静的时间。",
-      hi: "एक पल के लिए अपने मन को विश्राम दें। आज हर चीज़ के उत्तर की आवश्यकता नहीं है।\n\nधीरे-धीरे सांस लें। कुछ मार्ग तभी स्पष्ट होते हैं जब हम जोर देना बंद कर देते हैं。\n\nएक छोटा कदम ही काफी है। शांति पाने के लिए खुद को समय दें।",
-      ar: "أرح عقلك للحظة. ليس كل شيء يحتاج إلى إجابة اليوم.\n\nخذ نفساً بطيئاً. بعض المسارات تتضح فقط عندما نتوقف عن الدفع للأمام.\n\nخطوة صغيرة تكفي. امنح نفسك الوقت لتجد السلام.",
-      ru: "Дайте своему разуму отдохнуть на мгновение. Не все требует ответа сегодня.\n\nСделайте медленный вдох. Некоторые пути проясняются только тогда, когда мы перестаем идти напролом.\n\nОдного маленького шага достаточно. Дайте себе время обрести покой.",
-      tr: "Bir an için zihninizi dinlendirin. Bugün her şeyin bir cevaba ihtiyacı yok.\n\nYavaşça bir nefes alın. Bazı yollar sadece zorlamayı bıraktığımızda netleşir.\n\nKüçük bir adım yeterlidir. Huzur bulmak için kendinize zaman tanıyın.",
-      nl: "Laat je gedachten even rusten. Niet alles heeft vandaag een antwoord nodig.\n\nHaal langzaam adem. Sommige paden worden pas helder als we stoppen met forceren.\n\nEen kleine stap is genoeg. Geef jezelf de tijd om rust te vinden.",
-      pl: "Pozwól swojemu umysłowi przez chwilę odpocząć. Nie wszystko wymaga dzisiaj odpowiedzi.\n\nWeź powolny oddech. Niektóre ścieżki stają się jasne dopiero, gdy przestajemy pchać na siłę.\n\nMały krok w zupełności wystarczy. Daj sobie czas na odnalezienie spokoju.",
-      uk: "Дайте своєму разуму відпочити на мить. Не все потребує відповіді сьогодні.\n\nЗробіть повільний вдих. Деякі шляхи прояснюються лише тоді, коли ми перестаємо йти напролом.\n\nОдного маленького кроку цілком достатньо. Дайте собі час знайти спокій.",
-      id: "Istirahatkan pikiranmu sejenak. Tidak semuanya membutuhkan jawaban hari ini.\n\nTarik napas perlahan. Beberapa jalan hanya menjadi jelas ketika kita berhenti memaksakan diri.\n\nSatu langkah kecil saja sudah cukup. Beri dirimu waktu untuk menemukan kedamaian.",
-      el: "Ξεκουράστε το μυαλό σας για μια στιγμή. Δεν χρειάζονται όλα μια απάντηση σήμερα.\n\nΠάρτε μια αργή ανάσα. Κάποια μονοπάτια ξεκαθαρίζουν μόνο όταν σταματάμε να πιέζουμε τα πράγματα.\n\nΈνα μικρό βήμα αρκεί. Δώστε στον εαυτό σας χρόνο για να βρει τη γαλήνη.",
-      he: "תן למחשבות שלך לנוח לרגע. לא הכל חייב לקבל תשובה היום.\n\nקח נשימה איטית. חלק מהשבילים מתבהרים רק כשאנחנו מפסיקים לדחוף קדימה.\n\nצעד קטן זה מספיק. תן לעצมך זמן למצוא שקט.",
-      ro: "Odihnește-ți mintea pentru o clipă. Nu orice lucruri au nevoie de un răspuns astăzi.\n\nRespiră încet. Unele căi devin clare abia atunci când ne oprim din a mai forța lucrurile.\n\nUn pas mic este îndeajuns. Acordă-ți timpul necesar pentru a-ți regăsi liniștea.",
+    
+    // Fallback strings that vary by ritual
+    const fallbacks: Record<string, Record<number, string[]>> = {
+      en: {
+        1: [
+          "Rest your mind for a moment. Not everything needs an answer today.\n\nTake a slow breath. Some paths clear only when we stop pushing forward.\n\nA small step is enough. Give yourself time to find peace.",
+          "Close your eyes and breathe. The noise of the world does not dictate your rhythm.\n\nYou can simply exist right now. There is no urgency in finding the perfect path.\n\nStay still. Clarity arrives in the silence."
+        ],
+        2: [
+          "Look at how far you have come. The weight you carried was heavier than anyone knew.\n\nYou are allowed to set it down. Rest is not a surrender, it is a return to yourself.\n\nBreathe deeply. Your strength is quiet and resilient.",
+          "It takes courage to face the unknown. You have been navigating without a map.\n\nTrust the intuition that brought you here. The ground beneath you is solid enough.\n\nTake a moment to honor your journey."
+        ],
+        3: [
+          "The cycle completes itself naturally. You don't have to force the final piece into place.\n\nLet the unfolding happen. What is meant to stay will remain without effort.\n\nBreathe out the tension. A new dawn is quietly preparing itself.",
+          "You have gathered the wisdom you need. The answers are already settling within you.\n\nNow is the time to release the question. Embrace the gentle pause before the next step.\n\nPeace is yours to claim."
+        ]
+      },
+      pt: {
+        1: [
+          "Tranquilize seu pensamento por um instante. Nem tudo exige uma resposta hoje.\n\nRespire devagar. Certos caminhos só se revelam quando paramos de avançar à força.\n\nUm pequeno passo já basta. Dê tempo para que sua paz retorne.",
+          "Feche os olhos e sinta sua respiração. O barulho do mundo não deve ditar o seu ritmo.\n\nVocê pode simplesmente existir agora. Não há urgência em encontrar o rumo perfeito.\n\nFique em silêncio. A clareza sempre chega com a calma."
+        ],
+        2: [
+          "Olhe para a distância que você já percorreu. A dificuldade que enfrentou foi maior do que muitos imaginam.\n\nVocê tem permissão para descansar. Uma pausa não é desistência, é um retorno a si mesmo.\n\nRespire fundo. Sua força é serena e inabalável.",
+          "É preciso coragem para caminhar no desconhecido. Você tem navegado sem mapa e sem garantias.\n\nConfie na intuição que te trouxe até aqui. O chão sob seus pés é firme o bastante.\n\nTire um momento para honrar sua própria caminhada."
+        ],
+        3: [
+          "O ciclo se completa de forma natural. Não é necessário forçar a última peça a se encaixar.\n\nDeixe que a vida se desdobre. O que deve permanecer ficará sem exigir esforço.\n\nSolte a tensão. Uma nova manhã se prepara silenciosamente para você.",
+          "Você já colheu a sabedoria de que precisava. As respostas já estão pousando dentro de você.\n\nAgora é o momento de soltar as perguntas. Abrace a pausa suave antes do próximo passo.\n\nA paz é um direito seu."
+        ]
+      },
+      es: {
+        1: [
+          "Descansa tu mente por un momento. No todo necesita una respuesta hoy.\n\nRespira despacio. Algunos caminos solo se aclaran cuando dejamos de empujar.\n\nUn pequeño paso es suficiente. Date tiempo para encontrar la paz.",
+          "Cierra los ojos y respira. El ruido del mundo no tiene por qué dictar tu propio ritmo.\n\nPuedes simplemente existir ahora. No hay urgencia en descubrir el camino perfecto.\n\nQuédate en silencio. La claridad llega con la calma."
+        ],
+        2: [
+          "Mira la distancia que has recorrido. La dificultad que enfrentaste fue mayor de lo que muchos imaginan.\n\nTienes permiso para descansar. Una pausa no es rendirse, es volver a ti mismo.\n\nRespira profundo. Tu fuerza es serena e inquebrantable.",
+          "Se requiere valor para caminar en lo desconocido. Has navegado sin mapa y sin garantías.\n\nConfía en la intuición que te trajo hasta aquí. El suelo bajo tus pies es bastante firme.\n\nTómate un momento para honrar tu propio viaje."
+        ],
+        3: [
+          "El ciclo se completa de manera natural. No es necesario forzar la última pieza para que encaje.\n\nDeja que la vida se desarrolle. Lo que debe quedarse lo hará sin exigir esfuerzo.\n\nSuelta la tensión. Una nueva mañana se prepara silenciosamente para ti.",
+          "Ya has reunido la sabiduría que necesitabas. Las respuestas se están asentando dentro de ti.\n\nAhora es el momento de soltar las preguntas. Abraza la suave pausa antes del siguiente paso.\n\nLa paz te pertenece."
+        ]
+      },
+      de: {
+        1: [
+          "Ruhen Sie Ihre Gedanken für einen Moment aus. Nicht alles braucht heute eine Antwort.\n\nAtmen Sie langsam. Manche Wege werden erst klar, wenn wir nicht mehr drängen.\n\nEin kleiner Schritt ist genug. Geben Sie sich Zeit, Frieden zu finden.",
+          "Schließe deine Augen und atme. Der Lärm der Welt muss nicht deinen Rhythmus bestimmen.\n\nDu darfst jetzt einfach sein. Es gibt keine Eile, den perfekten Weg zu finden.\n\nBleib in der Stille. Klarheit kommt mit der Ruhe."
+        ],
+        2: [
+          "Schau, wie weit du gekommen bist. Die Last, die du getragen hast, war schwerer, als irgendjemand wusste.\n\nDu darfst sie absetzen. Ausruhen ist keine Aufgabe, es ist eine Rückkehr zu dir selbst.\n\nAtme tief durch. Deine Stärke ist still und unverwüstlich.",
+          "Es erfordert Mut, sich dem Unbekannten zu stellen. Du bist ohne Landkarte navigiert.\n\nVertraue der Intuition, die dich hierher gebracht hat. Der Boden unter dir ist fest genug.\n\nNimm dir einen Moment Zeit, um deine Reise zu würdigen."
+        ],
+        3: [
+          "Der Zyklus schließt sich ganz natürlich. Du musst das letzte Puzzleteil nicht erzwingen.\n\nLass die Dinge sich entfalten. Was bleiben soll, wird ohne Anstrengung bleiben.\n\nAtme die Spannung aus. Ein neuer Morgen bereitet sich still für dich vor.",
+          "Du hast die Weisheit gesammelt, die du brauchst. Die Antworten lassen sich bereits in dir nieder.\n\nJetzt ist es an der Zeit, die Fragen loszulassen. Nimm die sanfte Pause vor dem nächsten Schritt an.\n\nFrieden gehört dir."
+        ]
+      },
+      it: {
+        1: ["Riposa la mente per un istante. Non tutto ha bisogno di una risposta oggi.\n\nFai un bel respiro lento. Alcuni sentieri si chiariscono solo quando smettiamo di forzare.\n\nUn piccolo passo è sufficiente. Concediti del tempo per trovare la pace.", "Chiudi gli occhi e respira. Non c'è fretta.\n\nPoi semplicemente essere te stesso.\n\nLa pace arriverà."],
+        2: ["Guarda quanto lontano sei arrivato.\n\nPuoi riposarti ora.\n\nRespira profondamente. La tua forza è quieta."],
+        3: ["Il ciclo si completa.\n\nLascia che le cose scorrano.\n\nUn nuovo inizio ti aspetta."]
+      },
+      ja: {
+        1: ["少しの間、心を休ませてください。今日すべてに答えを出す必要はありません。\n\nゆっくりと深呼吸をしましょう。前に進むのをやめた時にだけ、見えてくる道があります。\n\n小さな一歩で十分です。平和を見つけるための時間を自分に与えてください。", "目を閉じて息を吸ってください。\n\n急ぐ必要はありません。\n\n静けさの中に答えがあります。"],
+        2: ["あなたがどれほど遠くまで来たか見てください。\n\nここで休んでも大丈夫です。\n\n深呼吸してください。あなたの強さは静かです。"],
+        3: ["サイクルが完了します。\n\n物事が自然に進むのを任せてください。\n\n新しい始まりが待っています。"]
+      },
+      ko: {
+        1: ["잠시 마음을 쉬게 하세요. 모든 것에 오늘 대답할 필요는 없습니다.\n\n천천히 숨을 쉬세요. 억지로 나아가는 것을 멈출 때 비로소 분명해지는 길도 있습니다.\n\n작은 한 걸음이면 충분합니다. 평화를 찾을 시간을 스스로에게 주세요.", "눈을 감고 호흡하세요.\n\n서두를 필요 없습니다.\n\n고요함 속에 평화가 있습니다."],
+        2: ["당신이 얼마나 멀리 왔는지 보세요.\n\n이제 쉬어도 됩니다.\n\n깊게 숨을 들이마시세요. 당신의 힘은 고요합니다."],
+        3: ["주기가 자연스럽게 끝납니다.\n\n순리대로 흘러가게 두세요.\n\n새로운 시작이 기다리고 있습니다."]
+      },
+      zh: {
+        1: ["让你的心智稍作休息。今天并不是所有事情都需要答案。\n\n深吸一口气。有些道路只有在停止强求时才会清晰。\n\n一小步就足够了。给自己留出寻找平静的时间。", "闭上眼睛，呼吸。\n\n没有必要着急。\n\n在宁静中寻找和平。"],
+        2: ["看看你已经走了多远。\n\n你现在可以休息了。\n\n深呼吸，你的力量是安静的。"],
+        3: ["循环自然结束。\n\n让一切顺其自然。\n\n新的开始在等着你。"]
+      },
+      hi: {
+        1: ["एक पल के लिए अपने मन को विश्राम दें। आज हर चीज़ के उत्तर की आवश्यकता नहीं है।\n\nधीरे-धीरे सांस लें। कुछ मार्ग तभी स्पष्ट होते हैं जब हम जोर देना बंद कर देते हैं।\n\nएक छोटा कदम ही काफी है। शांति पाने के लिए खुद को समय दें।", "अपनी आँखें बंद करें और सांस लें।\n\nजल्दबाजी करने की कोई आवश्यकता नहीं है।\n\nशांति में उत्तर खोजें।"],
+        2: ["देखिए आप कितनी दूर आ गए हैं।\n\nअब आप आराम कर सकते हैं।\n\nगहरी सांस लें। आपकी ताकत शांत है।"],
+        3: ["चक्र पूरा हो गया है।\n\nचीजों को स्वाभाविक रूप से बहने दें।\n\nएक नई शुरुआत आपका इंतजार कर रही है।"]
+      },
+      ar: {
+        1: ["أرح عقلك للحظة. ليس كل شيء يحتاج إلى إجابة اليوم.\n\nخذ نفساً بطيئاً. بعض المسارات تتضح فقط عندما نتوقف عن الدفع للأمام.\n\nخطوة صغيرة تكفي. امنح نفسك الوقت لتجد السلام.", "أغلق عينيك وتنفس.\n\nلا توجد حاجة للاستعجال.\n\nفي الهدوء ستجد السلام."],
+        2: ["انظر إلى أي مدى وصلت.\n\nيمكنك أن ترتاح الآن.\n\nخذ نفساً عميقاً. قوتك هادئة."],
+        3: ["تكتمل الدورة بشكل طبيعي.\n\nدع الأمور تأخذ مجراها.\n\nبداية جديدة بانتظارك."]
+      },
+      ru: {
+        1: ["Дайте своему разуму отдохнуть на мгновение. Не все требует ответа сегодня.\n\nСделайте медленный вдох. Некоторые пути проясняются только тогда, когда мы перестаем идти напролом.\n\nОдного маленького шага достаточно. Дайте себе время обрести покой.", "Закройте глаза и дышите.\n\nНет необходимости спешить.\n\nВ тишине вы найдете покой."],
+        2: ["Посмотрите, как далеко вы зашли.\n\nТеперь вы можете отдохнуть.\n\nСделайте глубокий вдох. Ваша сила спокойна."],
+        3: ["Цикл завершается естественно.\n\nПозвольте вещам идти своим чередом.\n\nВас ждет новое начало."]
+      },
+      tr: {
+        1: ["Bir an için zihninizi dinlendirin. Bugün her şeyin bir cevaba ihtiyacı yok.\n\nYavaşça bir nefes alın. Bazı yollar sadece zorlamayı bıraktığımızda netleşir.\n\nKüçük bir adım yeterlidir. Huzur bulmak için kendinize zaman tanıyın.", "Gözlerinizi kapatın ve nefes alın.\n\nAcele etmenize gerek yok.\n\nSessizlikte huzur bulacaksınız."],
+        2: ["Ne kadar uzağa geldiğinize bakın.\n\nArtık dinlenebilirsiniz.\n\nDerin bir nefes alın. Gücünüz sessizdir."],
+        3: ["Döngü doğal olarak tamamlanıyor.\n\nHer şeyin akışına bırakın.\n\nYeni bir başlangıç sizi bekliyor."]
+      },
+      nl: {
+        1: ["Laat je gedachten even rusten. Niet alles heeft vandaag een antwoord nodig.\n\nHaal langzaam adem. Sommige paden worden pas helder als we stoppen met forceren.\n\nEen kleine stap is genoeg. Geef jezelf de tijd om rust te vinden.", "Sluit je ogen en adem.\n\nJe hoeft je niet te haasten.\n\nVind rust in de stilte."],
+        2: ["Kijk eens hoe ver je bent gekomen.\n\nJe mag nu rusten.\n\nAdem diep in. Je kracht is kalm."],
+        3: ["De cyclus is voltooid.\n\nLaat de dingen op hun beloop.\n\nEen nieuw begin wacht op je."]
+      },
+      pl: {
+        1: ["Pozwól swojemu umysłowi przez chwilę odpocząć. Nie wszystko wymaga dzisiaj odpowiedzi.\n\nWeź powolny oddech. Niektóre ścieżki stają się jasne dopiero, gdy przestajemy pchać na siłę.\n\nMały krok w zupełności wystarczy. Daj sobie czas na odnalezienie spokoju.", "Zamknij oczy i oddychaj.\n\nNie ma pośpiechu.\n\nZnajdź spokój w ciszy."],
+        2: ["Zobacz, jak daleko zaszedłeś.\n\nTeraz możesz odpocząć.\n\nWeź głęboki oddech. Twoja siła jest spokojna."],
+        3: ["Cykl dobiega końca.\n\nPozwól rzeczom płynąć.\n\nCzeka na ciebie nowy początek."]
+      },
+      uk: {
+        1: ["Дайте своєму разуму відпочити на мить. Не все потребує відповіді сьогодні.\n\nЗробіть повільний вдих. Деякі шляхи прояснюються лише тоді, коли ми перестаємо йти напролом.\n\nОдного маленького кроку цілком достатньо. Дайте собі час знайти спокій.", "Закрийте очі і дихайте.\n\nНемає потреби поспішати.\n\nУ тиші ви знайдете спокій."],
+        2: ["Подивіться, як далеко ви зайшли.\n\nТепер ви можете відпочити.\n\nЗробіть глибокий вдих. Ваша сила спокійна."],
+        3: ["Цикл завершується природно.\n\nДозвольте речам йти своєю чергою.\n\nНа вас чекає новий початок."]
+      },
+      id: {
+        1: ["Istirahatkan pikiranmu sejenak. Tidak semuanya membutuhkan jawaban hari ini.\n\nTarik napas perlahan. Beberapa jalan hanya menjadi jelas ketika kita berhenti memaksakan diri.\n\nSatu langkah kecil saja sudah cukup. Beri dirimu waktu untuk menemukan kedamaian.", "Tutup matamu dan bernapaslah.\n\nTidak perlu terburu-buru.\n\nTemukan kedamaian dalam keheningan."],
+        2: ["Lihat seberapa jauh kamu telah melangkah.\n\nKamu boleh beristirahat sekarang.\n\nTarik napas dalam-dalam. Kekuatanmu tenang."],
+        3: ["Siklus selesai secara alami.\n\nBiarkan segala sesuatunya mengalir.\n\nAwal yang baru menantimu."]
+      },
+      el: {
+        1: ["Ξεκουράστε το μυαλό σας για μια στιγμή. Δεν χρειάζονται όλα μια απάντηση σήμερα.\n\nΠάρτε μια αργή ανάσα. Κάποια μονοπάτια ξεκαθαρίζουν μόνο όταν σταματάμε να πιέζουμε τα πράγματα.\n\nΈνα μικρό βήμα αρκεί. Δώστε στον εαυτό σας χρόνο για να βρει τη γαλήνη.", "Κλείστε τα μάτια σας και αναπνεύστε.\n\nΔεν υπάρχει λόγος βιασύνης.\n\nΒρείτε γαλήνη στη σιωπή."],
+        2: ["Δείτε πόσο μακριά έχετε φτάσει.\n\nΜπορείτε να ξεκουραστείτε τώρα.\n\nΠάρτε μια βαθιά ανάσα. Η δύναμή σας είναι ήρεμη."],
+        3: ["Ο κύκλος ολοκληρώνεται.\n\nΑφήστε τα πράγματα να κυλήσουν.\n\nΜια νέα αρχή σας περιμένει."]
+      },
+      he: {
+        1: ["תן למחשבות שלך לנוח לרגע. לא הכל חייב לקבל תשובה היום.\n\nקח נשימה איטית. חלק מהשבילים מתבהרים רק כשאנחנו מפסיקים לדחוף קדימה.\n\nצעד קטן זה מספיק. תן לעצמך זמן למצוא שקט.", "עצום עיניים ונשום.\n\nאין צורך למהר.\n\nמצא שלווה בשקט."],
+        2: ["תראה כמה רחוק הגעת.\n\nאתה יכול לנוח עכשיו.\n\nקח נשימה עמוקה. הכוח שלך שקט."],
+        3: ["המעגל נסגר בטבעיות.\n\nתן לדברים לקרות מעצמם.\n\nהתחלה חדשה מחכה לך."]
+      },
+      ro: {
+        1: ["Odihnește-ți mintea pentru o clipă. Nu orice lucruri au nevoie de un răspuns astăzi.\n\nRespiră încet. Unele căi devin clare abia atunci când ne oprim din a mai forța lucrurile.\n\nUn pas mic este îndeajuns. Acordă-ți timpul necesar pentru a-ți regăsi liniștea.", "Închide ochii și respiră.\n\nNu este nevoie să te grăbești.\n\nGăsește pacea în liniște."],
+        2: ["Privește cât de departe ai ajuns.\n\nTe poți odihni acum.\n\nRespiră adânc. Puterea ta este liniștită."],
+        3: ["Ciclul se încheie natural.\n\nLasă lucrurile să curgă.\n\nUn nou început te așteaptă."]
+      },
+      fr: {
+        1: ["Reposez votre esprit un instant. Tout ne nécessite pas une réponse aujourd'hui.\n\nRespirez lentement. Certains chemins ne s'éclaircissent que lorsqu'on arrête de forcer.\n\nUn petit pas suffit. Laissez-vous le temps de trouver la paix.", "Fermez les yeux et respirez.\n\nIl n'y a pas d'urgence.\n\nTrouvez la paix dans le silence."],
+        2: ["Regardez le chemin parcouru.\n\nVous pouvez vous reposer maintenant.\n\nRespirez profondément. Votre force est tranquille."],
+        3: ["Le cycle s'achève naturellement.\n\nLaissez les choses se faire.\n\nUn nouveau départ vous attend."]
+      }
     };
+
 
     try {
       // Parse previous messages in this session
@@ -434,6 +552,12 @@ async function startServer() {
       console.log(`[ORACLE-THEME] Category chosen: ${category.id}. Subtheme: ${subtheme.titleEn}`);
 
       const prompt = `You are Tiresias, a wise, serene, and deeply comforting oracle. A real human is sitting on the other side of this screen. They spent several minutes sintonizing their thoughts to receive this response. They need to feel personally seen, understood, and emotionally held.
+
+CRITICAL INSTRUCTION:
+Write an original oracle reflection directly in ${langName}.
+Do not translate or reuse a previous response.
+Do not repeat themes, sentences, metaphors or structures from earlier rituals in this session.
+Generate a distinct reflection based on the current ritual number (${cycle} of 3) and current user context.
 
 YOUR FOCAL THEME FOR THIS MESSAGE:
 - Category: ${subtheme.titleEn} (${category.nameEn})
@@ -628,12 +752,16 @@ LANGUAGE & FORMATTING:
       console.log("[DEBUG] Texto enviado pela API:", JSON.stringify(finalMessage));
       res.json({ message: finalMessage });
     } catch (error: any) {
-      console.error("API call error:", error.message);
-      let fallback = fallbacks["en"];
-      if (langMap[language as string]) {
-        fallback = fallbacks[language as string] || fallbacks["en"];
-      }
-      console.log("Fallback acionado (Oracle)");
+      console.error("[TIRESIAS GENERATION ERROR]", error);
+      
+      const ritualData = fallbacks[langName] || fallbacks[language as string] || fallbacks["en"];
+      const cycleOptions = ritualData[cycle] || ritualData[1];
+      const fallback = cycleOptions[Math.floor(Math.random() * cycleOptions.length)];
+
+      console.warn("[TIRESIAS FALLBACK USED]", {
+        language: language,
+        ritual: cycle
+      });
       res.json({ message: fallback, fallback: true });
     }
   });

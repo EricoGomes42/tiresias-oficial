@@ -2905,7 +2905,10 @@
         }
         div:nth-of-type(6) > div:nth-of-type(1) > header:nth-of-type(1) > button#audioToggle:nth-of-type(1) {
           margin-left: 0px;
-          margin-right: 125px;
+          padding-left: 0px;
+          padding-top: 0px;
+          margin-top: 0px;
+          margin-right: 100px;
         }
         div:nth-of-type(6) > div:nth-of-type(1) > header:nth-of-type(1) > div:nth-of-type(1) > div#desktopLangTrigger:nth-of-type(1) {
           margin-left: 32px;
@@ -5661,6 +5664,11 @@
 
       let isAdblocked = false;
       let flowState = 0; // 0=Init, 1=Sintonizando, 2=Ready, 3=Done
+      let sessionId = sessionStorage.getItem("tiresiasSessionId");
+      if (!sessionId) {
+        sessionId = Math.random().toString(36).substring(2, 15);
+        sessionStorage.setItem("tiresiasSessionId", sessionId);
+      }
       let ritualCountForSession = parseInt(
         sessionStorage.getItem("tiresiasCycles") || "0",
         10,
@@ -5775,7 +5783,22 @@
           window.prefetchedMessage = null;
           window.prefetchedAudioSrc = null;
 
-          window.oraclePromise = fetch("/api/oracle", {
+          
+          const messageKey = `tiresias:${sessionId}:${currentLang}:ritual:${ritualCountForSession + 1}`;
+          console.log("[TIRESIAS] language:", currentLang);
+          console.log("[TIRESIAS] ritual:", ritualCountForSession + 1);
+          console.log("[TIRESIAS] session:", sessionId);
+          console.log("[TIRESIAS] request started");
+          console.log("[TIRESIAS] storage key:", messageKey);
+
+          const cachedMessage = sessionStorage.getItem(messageKey);
+
+          if (cachedMessage) {
+            console.log("[TIRESIAS] Using cached message for", messageKey);
+            window.oraclePromise = Promise.resolve({ message: cachedMessage, cached: true });
+          } else {
+            window.oraclePromise = fetch("/api/oracle", {
+
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -5786,7 +5809,16 @@
               console.log("Fallback acionado (Oracle)?", !!data.fallback);
               console.log("[DEBUG] Texto recebido no frontend:", JSON.stringify(data.message));
               
+              
+              console.log("[TIRESIAS] response received:", data.message.substring(0, 30) + "...");
+              if (data.fallback) {
+                console.log("[TIRESIAS] fallback used:", true);
+              } else {
+                console.log("[TIRESIAS] fallback used:", false);
+              }
+              sessionStorage.setItem(messageKey, data.message);
               window.prefetchedMessage = data.message;
+
 
               if (data.message) {
                 // Add natural pauses for more contemplative pacing
@@ -5813,7 +5845,7 @@
               window.prefetchedMessage = null;
               throw err;
             });
-
+          }
           const timer = setInterval(() => {
             count--;
             if (count > 0) {
@@ -6452,6 +6484,18 @@
       window.resetRitual = function () {
         sessionStorage.removeItem("tiresiasCycles");
         window.tiresiasSessionTheme = ""; // Reset session theme history
+        
+        // Clear cached messages for current session
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const key = sessionStorage.key(i);
+          if (key && key.startsWith(`tiresias:${sessionId}:`)) {
+            sessionStorage.removeItem(key);
+          }
+        }
+        // Generate new session ID
+        sessionId = Math.random().toString(36).substring(2, 15);
+        sessionStorage.setItem("tiresiasSessionId", sessionId);
+
         window.resetAffiliateCampaignCycle();
         ritualCountForSession = 0;
         flowState = 0;
